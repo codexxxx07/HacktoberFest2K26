@@ -175,7 +175,7 @@ export default function Navbar() {
                     },
                   }}
                 />
-              ) : isLoaded ? (
+              ) : (
                 <>
                   <Link to="/login" className="nav-btn nav-btn-login nav-btn-pixel">
                     {t("nav.login")}
@@ -184,7 +184,7 @@ export default function Navbar() {
                     {t("nav.signup")}
                   </Link>
                 </>
-              ) : null}
+              )}
               <SosButton variant="navbar" onClick={openSos} />
               <ThemePullCord />
             </div>
