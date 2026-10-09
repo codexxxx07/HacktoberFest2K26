@@ -25,7 +25,7 @@ export function getRole(user) {
 
 /**
  * Returns the landing route for a role. Unknown roles fall back to the
- * elder dashboard so guards always keep users inside Pixel Players.
+ * elder dashboard so guards always keep users inside MindfullMemories.
  */
 export function getHomeForRole(role) {
   return ROLE_HOMES[role] || ROLE_HOMES[ROLES.ELDER];

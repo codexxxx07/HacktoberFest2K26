@@ -1,4 +1,4 @@
-# Plan — Pixel Players Caregiver Experience
+# Plan — MindfullMemories Caregiver Experience
 
 Status: PLAN ONLY — no implementation until approved.
 Constraint: the existing Elder experience is the base product and must remain visually and functionally unchanged.
@@ -125,7 +125,7 @@ Elder     { elderId, profile, linkedCaregiverIds[] }
 | Orders | **new** `CareContext.orders` (caregiver-scoped) | `services/care/orders.js` — cart → review → confirm → status; `OrderService` interface with clearly-labeled demo adapter | none |
 | Links | `CareContext` link graph | `services/care/links.js` | none |
 
-Messaging honesty: UI states "Syncs when the elder next opens Pixel Players" — no real-time claim. Orders honesty: UI states "Demo workflow — no real purchase is made"; confirmation step is mandatory.
+Messaging honesty: UI states "Syncs when the elder next opens MindfullMemories" — no real-time claim. Orders honesty: UI states "Demo workflow — no real purchase is made"; confirmation step is mandatory.
 
 Medical honesty: medicines UI carries the existing-style disclaimer — track and remind only, no diagnosis/treatment claims; language stays "Cognitive Activity / Game Activity", never "dementia score".
 
@@ -153,7 +153,7 @@ All existing routes unchanged in path and behavior for elders. `*` → existing 
 
 ## 7. Caregiver experience design (Phase 4, 5, 6, 7, 12, 13)
 
-**Shell:** desktop left sidebar (collapsible) + top bar (Pixel Players brand, elder switcher chip, theme lamp, Clerk `UserButton`); mobile: hamburger → slide-in nav (pattern borrowed from existing Navbar behavior but newly built, not reused). Footer: compact caregiver footer (no elder footer links).
+**Shell:** desktop left sidebar (collapsible) + top bar (MindfullMemories brand, elder switcher chip, theme lamp, Clerk `UserButton`); mobile: hamburger → slide-in nav (pattern borrowed from existing Navbar behavior but newly built, not reused). Footer: compact caregiver footer (no elder footer links).
 
 **Navigation:** Overview · Elder Status · Meals · Medicines · Routine · Reminders · Activities · Messages · Orders · Settings.
 
@@ -210,7 +210,7 @@ Not modified at all: `Navbar`, `Footer`, `ThemeContext`, all other Elder pages, 
 - `src/auth/useRole.js` — hook + `claimRole(user, role)` (calls `user.update({ unsafeMetadata })`)
 
 **Entry**
-- `src/pages/Welcome.jsx` — "How would you like to continue?" role chooser (Pixel Players design language)
+- `src/pages/Welcome.jsx` — "How would you like to continue?" role chooser (MindfullMemories design language)
 
 **Caregiver shell & UI kit**
 - `src/caregiver/CaregiverShell.jsx`

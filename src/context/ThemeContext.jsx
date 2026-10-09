@@ -8,7 +8,7 @@ import {
   useCallback,
 } from 'react';
 
-const STORAGE_KEY = 'pixelplayers-theme';
+const STORAGE_KEY = 'mindfullmemories-theme';
 
 const THEME_COLORS = {
   light: '#fffaf3',

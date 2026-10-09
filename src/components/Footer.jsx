@@ -56,7 +56,7 @@ export default function Footer() {
                 <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-400 rounded-sm" />
               </div>
               <span className="font-pixel text-xl text-[#052e29] dark:text-[#ffffff]">
-                Pixel Players
+                MindfullMemories
               </span>
             </div>
             <p className="text-lg mb-6 max-w-sm text-[#0a352e] dark:text-[#d6fff9]">
@@ -141,7 +141,7 @@ export default function Footer() {
               {t("footer.github")}
             </a>
             <a
-              href="mailto:hello@pixelplayers.com"
+              href="mailto:hello@mindfullmemories.com"
               className="pp-footer-link pp-footer-link--muted text-sm"
               aria-label={t("footer.emailLabel")}
             >

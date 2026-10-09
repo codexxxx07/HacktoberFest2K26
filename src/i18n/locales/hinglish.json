@@ -79,7 +79,7 @@
     "editProfile": "Profile Badlein",
     "changePassword": "Password Badlein",
     "signOut": "Sign Out Karein",
-    "about": "Pixel Players ke baare mein",
+    "about": "MindfullMemories ke baare mein",
     "version": "Sansakaran: 1.0.0",
     "builtWithCare": "Poorvi Uttari Kshetra ke liye dekhbhaal ke saath banaya gaya",
     "sihBadge": "🏆 Smart Bharat Hackathon 2026",
@@ -119,7 +119,7 @@
     "platform": "Platform",
     "support": "Sahayata",
     "explore": "Dekhein",
-    "copyright": "© 2026 Pixel Players. Un logon ke liye dekhbhaal ke saath banaya gaya jo aapke liye sabse mahatvapurn hain.",
+    "copyright": "© 2026 MindfullMemories. Un logon ke liye dekhbhaal ke saath banaya gaya jo aapke liye sabse mahatvapurn hain.",
     "twitter": "Twitter",
     "github": "GitHub",
     "emailLabel": "Humhein email karein",
@@ -215,7 +215,7 @@
       "relationship": "Dekhbhaal karne wale, Guwahati"
     },
     "ctaTitle": "Apni Yatra Shuru Karne Ke Liye Taiyaar?",
-    "ctaDesc": "Hazaaroon parivaaron ke saath judein jo Pixel Players ka istemal karke saanjnaatmak swasthya aur rozmarra swatantrata ka sahyog le rahe hain.",
+    "ctaDesc": "Hazaaroon parivaaron ke saath judein jo MindfullMemories ka istemal karke saanjnaatmak swasthya aur rozmarra swatantrata ka sahyog le rahe hain.",
     "getStarted": "Shuru Karein"
   },
   "about": {
@@ -235,7 +235,7 @@
     "langMalayalam": "മലയാളം",
     "pixelPattern": "PIXEL AVKALP",
     "eyebrow": "Parichay",
-    "title": "Pixel Players ke baare mein",
+    "title": "MindfullMemories ke baare mein",
     "headerDesc": "Poorvi Uttari Kshetra ke bade-bujurg upyogkartaon ke liye dekhbhaal ke saath banaya gaya",
     "missionBadge": "Lakshya",
     "missionTitle": "Hamara Lakshya",
@@ -358,7 +358,7 @@
       "desc": "Emergency samparkon tak turant pahunch aur jab sabse zyada zaroorat ho to madad."
     },
     "whyUsBadge": "Hum Kyon",
-    "whyUsTitle": "Pixel Players Hi Kyon?",
+    "whyUsTitle": "MindfullMemories Hi Kyon?",
     "cmpAspect": "PAHLU",
     "cmpTraditional": "PURAANE UPKARAN",
     "cmpPixel": "PIXEL SAATHI",
@@ -677,7 +677,7 @@
     "completedLabel": "✓ Poora Hua",
     "lockedLabel": "🔒 Band",
     "important": "MAHATVAPURN",
-    "disclaimerText": "Pixel Players sirf gatiividhi judav ko track karta hai. Ye koi medical nidaan upkaran nahi hai. Medical salaah ke liye swasthya sevakon se baat karein.",
+    "disclaimerText": "MindfullMemories sirf gatiividhi judav ko track karta hai. Ye koi medical nidaan upkaran nahi hai. Medical salaah ke liye swasthya sevakon se baat karein.",
     "continue": "Abhyaas Jaari Rakhein"
   },
   "reminders": {

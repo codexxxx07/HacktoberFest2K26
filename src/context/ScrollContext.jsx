@@ -14,7 +14,7 @@ import Lenis from 'lenis';
 import { useApp } from './AppContext';
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Pixel Players scroll experience
+   MindfullMemories scroll experience
    ────────────────────────────────────────────────────────────────────────────
    One Lenis instance, one rAF-synced scroll bus and one IntersectionObserver
    for the whole app. Pages only declare intent with data attributes:

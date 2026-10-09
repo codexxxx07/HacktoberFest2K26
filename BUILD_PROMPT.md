@@ -1,8 +1,8 @@
-# BUILD PROMPT — "Pixel Players"
+# BUILD PROMPT — "MindfullMemories"
 
 ## 0. Your Mission
 
-Build a production-quality, deployable React + Vite single-page web app called **Pixel Players** — an AI-powered cognitive gaming and memory-assistance platform for elderly users, with a separate caregiver monitoring experience. Tagline: **"Helping Memories Stay Meaningful."**
+Build a production-quality, deployable React + Vite single-page web app called **MindfullMemories** — an AI-powered cognitive gaming and memory-assistance platform for elderly users, with a separate caregiver monitoring experience. Tagline: **"Helping Memories Stay Meaningful."**
 
 It is a frontend-only SPA (no backend). Use realistic in-memory demo data. It must look and feel polished enough to demo at a hackathon: warm, accessible, playful, "cozy pixel + skeuomorphic" design. **All UI text is in English (hardcoded) — no translation system.**
 
@@ -42,7 +42,7 @@ Warm, nostalgic, reassuring, accessible for older adults. Retro pixel-art meets 
 
 ### Dark mode
 - Class-based: toggle `.dark` on `<html>`.
-- **No flash of wrong theme:** inline `<script>` in `index.html` `<head>` reads `localStorage["pixelplayers-theme"]`, falls back to `prefers-color-scheme`, sets `.dark` + `data-theme` + `<meta name="theme-color">` **before** first paint.
+- **No flash of wrong theme:** inline `<script>` in `index.html` `<head>` reads `localStorage["mindfullmemories-theme"]`, falls back to `prefers-color-scheme`, sets `.dark` + `data-theme` + `<meta name="theme-color">` **before** first paint.
 - Dark palette must be hue-locked to the background image (teal/cyan water tones), not generic grey. Remap Tailwind's warm/teal/gray/amber/red/emerald/blue/purple/rose/orange ramps under `.dark`.
 - Remap `--color-white` in dark mode to a teal-tinted card surface; re-pin `.text-white`/`.border-white` to true white.
 - Add `ThemeToggle` plus a decorative lamp **`ThemePullCord`**.
@@ -104,7 +104,7 @@ StrictMode
 Build a lightweight **`AuthContext`** (`src/context/AuthContext.jsx`) — no third-party provider:
 
 - State: `{ isLoaded, isSignedIn, user, role, signIn, signUp, signOut, claimRole }`.
-- Persist the mock session to `localStorage["pixelplayers-auth"]` (stores a fake user object + role). Always resolve `isLoaded` to `true` after a short tick so guards/skeletons behave realistically.
+- Persist the mock session to `localStorage["mindfullmemories-auth"]` (stores a fake user object + role). Always resolve `isLoaded` to `true` after a short tick so guards/skeletons behave realistically.
 - `user` shape: `{ firstName, fullName, username, email }`. Expose `getUserDisplayName(user)`.
 - Login/Signup pages: friendly large forms (name + email, any password) using an `AuthShell` + `AuthField`; on submit, create the mock session and route by role (no role → `/welcome`).
 - Roles: `elder` (home `/dashboard`), `caregiver` (home `/caregiver/dashboard`). Store on `user.role`.
@@ -145,7 +145,7 @@ Build a lightweight **`AuthContext`** (`src/context/AuthContext.jsx`) — no thi
 
 ## 7. State Management (React Context only)
 
-- **ThemeContext** — `{ theme, isDark, isLight, toggleTheme, setTheme }`, persisted to `localStorage["pixelplayers-theme"]`, OS-aware.
+- **ThemeContext** — `{ theme, isDark, isLight, toggleTheme, setTheme }`, persisted to `localStorage["mindfullmemories-theme"]`, OS-aware.
 - **AuthContext** — mock auth described in §5.
 - **AppContext** — elder store: `user`, `currentTime` (ticks every 30s), `memories`, `routine`, `reminders`, `games`, `progressData`, `supportNetwork`, `activityLog`, `announcements`, `settings`, plus mutators (`addMemory`, `deleteMemory`, `updateMemory`, `addReminder`, `toggleReminder`, `deleteReminder`, `addSupportPerson`, `updateSettings`, `toggleRoutine`, `logActivity`, `addAnnouncement`, `dismissAnnouncement`). Seed all with realistic demo data.
 - **CareContext** — `caregiverId`, `graph`, `authorizedElders`, `selectedElder`, `selectElder`, `checkLink`, `orders` (+ add/update/cancel).

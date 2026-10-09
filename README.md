@@ -1,9 +1,9 @@
-# Pixel Players
+# MindfullMemories
 
 > An AI-powered cognitive gaming and memory-assistance platform for elderly users.
 > Helping memories stay meaningful.
 
-Pixel Players is a two-experience web app: a warm, large-text **Elder experience**
+MindfullMemories is a two-experience web app: a warm, large-text **Elder experience**
 (games, memory vault, routine, reminders and an AI companion named Clara) and a
 data-rich **Caregiver experience** (a dashboard to monitor and support a linked
 elder). It ships as a single React + Vite SPA with Clerk authentication, a full
@@ -262,7 +262,7 @@ Defined in `src/index.css` under `@theme` and `:root`:
 
 - Class-based dark mode: `.dark` on `<html>`, driven by `ThemeContext`.
 - **No flash of wrong theme:** an inline script in `index.html` reads
-  `localStorage` (`pixelplayers-theme`) and the OS preference before first paint.
+  `localStorage` (`mindfullmemories-theme`) and the OS preference before first paint.
 - Dark palette is hue-locked to the background artwork (teal/cyan), not generic grey.
 - Toggle via `ThemeToggle` and the decorative `ThemePullCord` (retro lamp cord).
 
@@ -331,7 +331,7 @@ No external store — React Context only:
 ## Internationalization
 
 `src/i18n/index.js` initializes i18next with **14 locales** and persists the choice
-in `localStorage` (`pixelplayers-language`):
+in `localStorage` (`mindfullmemories-language`):
 
 `en`, `hi`, `bn`, `or`, `as`, `pa`, `ta`, `te`, `ur`, `mr`, `gu`, `kn`, `ml`, and
 `hinglish`. Fallback is `en`. All user-facing strings are looked up via `t(key)`.
@@ -377,7 +377,7 @@ instantiates Lenis or arms the effects.
 ## Project Structure
 
 ```
-PixelPlayers/
+MindfullMemories/
 ├─ public/                       # Static assets (favicon, etc.)
 ├─ src/
 │  ├─ assets/                    # Logo, hero, BG, Clara images

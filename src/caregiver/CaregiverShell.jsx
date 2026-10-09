@@ -44,7 +44,7 @@ export default function CaregiverShell({ children }) {
         <main className="site-background cg-shell__content">{children}</main>
         <footer className="cg-footer">
           <span>
-            © {new Date().getFullYear()} Pixel Players · {t("caregiver.footerLabel")}
+            © {new Date().getFullYear()} MindfullMemories · {t("caregiver.footerLabel")}
           </span>
           <span className="cg-fade">{t("caregiver.footerDisclaimer")}</span>
           <Link to="/welcome" className="cg-btn cg-btn--ghost cg-btn--sm">

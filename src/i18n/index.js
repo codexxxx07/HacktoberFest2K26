@@ -16,7 +16,7 @@ import gu from './locales/gu.json';
 import kn from './locales/kn.json';
 import ml from './locales/ml.json';
 
-const STORAGE_KEY = 'pixelplayers-language';
+const STORAGE_KEY = 'mindfullmemories-language';
 
 const resources = {
   en: { translation: en },

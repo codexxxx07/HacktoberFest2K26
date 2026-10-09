@@ -48,7 +48,7 @@ function AuthShell({ eyebrow, title, subtitle, children, chromeless = false }) {
         )}
 
         <p className="mt-8 text-center text-sm text-gray-400 font-medium">
-          Pixel Players · {t('auth.tagline')}
+          MindfullMemories · {t('auth.tagline')}
         </p>
       </div>
     </div>

@@ -91,7 +91,7 @@
     "experienceValue": "Experience · Senior / Elder",
     "experienceCaregiverValue": "Experience · Caregiver",
     "switchExperience": "Switch to Caregiver Experience",
-    "about": "About Pixel Players",
+    "about": "About MindfullMemories",
     "version": "Version: 1.0.0",
     "builtWithCare": "Built with care for the North Eastern Region",
     "sihBadge": "🏆 Smart India Hackathon 2026",
@@ -131,7 +131,7 @@
     "platform": "Platform",
     "support": "Support",
     "explore": "Explore",
-    "copyright": "© 2026 Pixel Players. Built with care for those who matter most.",
+    "copyright": "© 2026 MindfullMemories. Built with care for those who matter most.",
     "twitter": "Twitter",
     "github": "GitHub",
     "emailLabel": "Email us",
@@ -227,7 +227,7 @@
       "relationship": "Caregiver, Guwahati"
     },
     "ctaTitle": "Ready to Start Your Journey?",
-    "ctaDesc": "Join thousands of families who are using Pixel Players to support cognitive wellness and daily independence.",
+    "ctaDesc": "Join thousands of families who are using MindfullMemories to support cognitive wellness and daily independence.",
     "getStarted": "Get Started"
   },
   "about": {
@@ -247,7 +247,7 @@
     "langMalayalam": "മലയാളം",
     "pixelPattern": "PIXEL PATTERN",
     "eyebrow": "About",
-    "title": "About Pixel Players",
+    "title": "About MindfullMemories",
     "headerDesc": "Designed with care for elderly users in the North Eastern Region",
     "missionBadge": "Mission",
     "missionTitle": "Our Mission",
@@ -370,7 +370,7 @@
       "desc": "Quick access to emergency contacts and help when you need it most."
     },
     "whyUsBadge": "Why Us",
-    "whyUsTitle": "Why Pixel Players?",
+    "whyUsTitle": "Why MindfullMemories?",
     "cmpAspect": "ASPECT",
     "cmpTraditional": "TRADITIONAL TOOLS",
     "cmpPixel": "PIXEL COMPANION",
@@ -698,7 +698,7 @@
     "completedLabel": "✓ Completed",
     "lockedLabel": "🔒 Locked",
     "important": "IMPORTANT",
-    "disclaimerText": "Pixel Players tracks activity engagement only. This is not a medical diagnostic tool. Please consult healthcare professionals for medical advice.",
+    "disclaimerText": "MindfullMemories tracks activity engagement only. This is not a medical diagnostic tool. Please consult healthcare professionals for medical advice.",
     "continue": "Continue Practicing"
   },
   "reminders": {
@@ -920,8 +920,8 @@
   },
   "welcome": {
     "kicker": "Choose your experience",
-    "title": "Welcome to Pixel Players",
-    "subtitle": "Pixel Players has a gentle world for seniors and a professional hub for caregivers. Pick the experience that fits you.",
+    "title": "Welcome to MindfullMemories",
+    "subtitle": "MindfullMemories has a gentle world for seniors and a professional hub for caregivers. Pick the experience that fits you.",
     "signedInAs": "Signed in as {{name}}",
     "elderTitle": "For Seniors",
     "elderDesc": "Play games, save memories, follow your routine and talk with Clara.",
@@ -932,7 +932,7 @@
     "working": "Updating…",
     "switch": "Switch",
     "choose": "Choose",
-    "newUser": "New to Pixel Players?",
+    "newUser": "New to MindfullMemories?",
     "createAccount": "Create an account",
     "backHome": "Back to home"
   },
@@ -1043,7 +1043,7 @@
       "taken": "Taken",
       "pending": "Pending",
       "missed": "Missed",
-      "disclaimer": "Track and remind only. Pixel Players never substitutes professional medical advice, diagnosis or treatment plans.",
+      "disclaimer": "Track and remind only. MindfullMemories never substitutes professional medical advice, diagnosis or treatment plans.",
       "schedule": "Schedule",
       "none": "No medicines scheduled.",
       "time": "Time",
@@ -1113,7 +1113,7 @@
       "kicker": "Messages",
       "title": "Messages for {{name}}",
       "subtitle": "Leave a warm note that appears on the elder's dashboard.",
-      "syncNote": "Messages appear on the elder's dashboard the next time they open Pixel Players — delivery is not real-time yet.",
+      "syncNote": "Messages appear on the elder's dashboard the next time they open MindfullMemories — delivery is not real-time yet.",
       "composerTitle": "Write a message",
       "subject": "Subject",
       "subjectPlaceholder": "e.g. A small hello",
@@ -1187,7 +1187,7 @@
       "intPersist": "Elder data (routine, meals, medicines, activity) currently lives in the shared in-memory store instead of a database.",
       "intLinks": "Verified elder↔caregiver links need a backend — today one demo elder is connected per caregiver.",
       "intOrders": "Orders are a simulated lifecycle and need a pharmacy/grocery integration.",
-      "intMessaging": "Messages sync when the elder next opens Pixel Players — no push yet."
+      "intMessaging": "Messages sync when the elder next opens MindfullMemories — no push yet."
     }
   }
 }

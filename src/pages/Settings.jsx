@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { PixelCard, PixelButton } from '../components/';
 import { useRole } from '../auth/useRole';
 
-const LANG_STORAGE_KEY = 'pixelplayers-language';
+const LANG_STORAGE_KEY = 'mindfullmemories-language';
 
 const languages = [
   { code: 'en', flag: '🇬🇧', name: 'English', native: 'English' },
@@ -394,7 +394,7 @@ export default function Settings() {
           <SectionHeading title={t('settings.about')} />
           <PixelCard className="p-6 text-center">
             <p className="font-pixel text-teal-700 text-sm mb-2 tracking-wide">
-              Pixel Players
+              MindfullMemories
             </p>
             <p className="text-gray-500 text-sm mb-1">{t('settings.version')}</p>
             <p className="text-warm-700 text-base leading-relaxed mb-3">
