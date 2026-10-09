@@ -5,7 +5,7 @@
  *
  * - Replaces Vite's `import.meta.env` reads with test globals (no real keys used).
  * - Mocks global fetch, so no network calls and no OpenAI account are required.
- * - Covers: missing key, empty input, request payload (Responses API),
+ * - Covers: missing key, empty input, request payload (Chat Completions API),
  *   conversation-history filtering, response parsing, and error mapping.
  *
  * This does NOT replace a live end-to-end test with a real VITE_OPENAI_API_KEY.
@@ -54,16 +54,18 @@ function check(name, cond, extra = "") {
 }
 
 const okBody = {
-  id: "resp_test",
-  object: "response",
-  status: "completed",
-  output: [
+  id: "chatcmpl_test",
+  object: "chat.completion",
+  created: 1234567890,
+  model: "gpt-4o-mini",
+  choices: [
     {
-      id: "msg_1",
-      type: "message",
-      role: "assistant",
-      status: "completed",
-      content: [{ type: "output_text", text: "Hello! I am Clara.", annotations: [] }],
+      index: 0,
+      message: {
+        role: "assistant",
+        content: "Hello! I am Clara.",
+      },
+      finish_reason: "stop",
     },
   ],
 };
@@ -124,25 +126,25 @@ try {
   check("success response parsed", ok.success === true && ok.text === "Hello! I am Clara.", JSON.stringify(ok));
 
   const body = lastRequest?.body;
-  check("hits responses endpoint", /\/v1\/responses$/.test(lastRequest?.url || ""), lastRequest?.url);
+  check("hits chat completions endpoint", /\/v1\/chat\/completions$/.test(lastRequest?.url || ""), lastRequest?.url);
   check("uses configured model default", body?.model === "gpt-4o-mini", String(body?.model));
-  check("uses max_output_tokens (not max_tokens)", body?.max_output_tokens === 500 && !("max_tokens" in (body || {})));
+  check("uses max_tokens (not max_output_tokens)", body?.max_tokens === 500 && !("max_output_tokens" in (body || {})));
   check("temperature preserved", body?.temperature === 0.7);
 
-  const input = body?.input || [];
-  check("system message first", input[0]?.role === "system", JSON.stringify(input[0]?.role));
-  check("system carries user name", String(input[0]?.content).includes("User name: Maya"));
+  const messages = body?.messages || [];
+  check("system message first", messages[0]?.role === "system", JSON.stringify(messages[0]?.role));
+  check("system carries user name", String(messages[0]?.content).includes("User name: Maya"));
   check(
     "setup message excluded from history",
-    !input.some((m) => String(m.content).includes("setup instructions")),
-    JSON.stringify(input.map((m) => `${m.role}:${String(m.content).slice(0, 30)}`))
+    !messages.some((m) => String(m.content).includes("setup instructions")),
+    JSON.stringify(messages.map((m) => `${m.role}:${String(m.content).slice(0, 30)}`))
   );
-  check("history turns replayed", input.some((m) => m.role === "assistant" && m.content === "You saved knitting."));
-  check("current user message last", input[input.length - 1]?.role === "user" && input[input.length - 1]?.content === "Hello Clara");
-  check("history capped at 10", input.length <= 12, String(input.length));
+  check("history turns replayed", messages.some((m) => m.role === "assistant" && m.content === "You saved knitting."));
+  check("current user message last", messages[messages.length - 1]?.role === "user" && messages[messages.length - 1]?.content === "Hello Clara");
+  check("history capped at 10", messages.length <= 12, String(messages.length));
 
   // 4. Empty model output
-  nextHandler = () => jsonResponse(200, { id: "resp_empty", object: "response", status: "completed", output: [] });
+  nextHandler = () => jsonResponse(200, { id: "chatcmpl_empty", object: "chat.completion", choices: [] });
   const emptyRes = await svc.getAIResponse("hi", {});
   check("EMPTY_RESPONSE when model returns nothing", emptyRes.success === false && emptyRes.error === "EMPTY_RESPONSE", JSON.stringify(emptyRes));
 
@@ -177,9 +179,12 @@ try {
   const missingModel = await svc.getAIResponse("hi", {});
   check("MODEL_NOT_FOUND on 404", missingModel.success === false && missingModel.error === "MODEL_NOT_FOUND", JSON.stringify(missingModel));
 
-  // 11. Network failure
+  // 11. Network failure (APIConnectionError from OpenAI SDK)
   nextHandler = () => {
-    throw new TypeError("fetch failed");
+    const err = new Error("Connection error.");
+    err.name = "APIConnectionError";
+    err.constructor = { name: "APIConnectionError" };
+    throw err;
   };
   const netErr = await svc.getAIResponse("hi", {});
   check("NETWORK_ERROR on fetch failure", netErr.success === false && netErr.error === "NETWORK_ERROR", JSON.stringify(netErr));

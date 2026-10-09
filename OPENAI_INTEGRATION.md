@@ -10,7 +10,7 @@ Last verified: 2026-10-09 (`npm run lint`, `npm run build`, `npm run test:ai` al
 
 | Requirement | Status | Notes |
 | --- | --- | --- |
-| `src/services/aiService.js` — OpenAI client, system instructions, context limits, history, error mapping | ✅ Implemented & tested | Uses the Responses API (`client.responses.create`) with `max_output_tokens`, `temperature`, model `gpt-4o-mini` |
+| `src/services/aiService.js` — OpenAI client, system instructions, context limits, history, error mapping | ✅ Implemented & tested | Uses the Chat Completions API (`client.chat.completions.create`) with `max_tokens`, `temperature`, model `gpt-4o-mini` |
 | `src/services/useConversation.js` — routes to OpenAI, dummy fallback, first-run setup message | ✅ Implemented & tested | Fallback only runs when no API key is configured |
 | `.env.example` — `VITE_OPENAI_API_KEY` / `VITE_OPENAI_MODEL` template | ✅ Done | No real keys included |
 | `.gitignore` — ignore `.env`, `.env.local`, `.env.*.local` | ✅ Done | (change present in working tree, commit when you commit the integration) |
@@ -20,25 +20,28 @@ Last verified: 2026-10-09 (`npm run lint`, `npm run build`, `npm run test:ai` al
 | Live end-to-end call with a real API key | ⏳ **Not verified** | No `VITE_OPENAI_API_KEY` exists in this environment. Add one to `.env.local` and follow *Testing → With API Key*. |
 | Browser UI walkthrough (voice input, TTS, `/assistant` route) | ⏳ **Not verified** | No browser automation was available; verify manually per *Testing* below. |
 
-### Fixes applied in this pass
+### Fixes applied in this pass (2026-10-09)
 
-1. **Correct Responses API parameter** — `max_tokens` → `max_output_tokens` (the Responses API rejects/ignores `max_tokens`).
-2. **First-run setup message** — the old `messages.length <= 2` check evaluated after the user message was committed, so the setup instructions never appeared. It now triggers once per conversation when no key is configured.
-3. **Loading states** — in the no-key fallback, `thinking`/voice `processing` were cleared immediately instead of when the reply arrived; they now stay active for the full delay, matching the OpenAI path.
-4. **Error mapping** — added detection for SDK connection errors (`APIConnectionError`), 400/422, 404 (unknown model), and 429 `insufficient_quota` (out of credit); 5xx handled as a range.
-5. **Robust context building** — partial/undefined `memories`, `routine`, `reminders`, `games`, or `currentTime` can no longer throw before the request.
-6. **Stale-response protection** — replies in flight when the user hits *New chat* are discarded, and a pending fallback reply is cancelled on reset/unmount.
-7. **History hygiene** — setup/greeting-instruction messages are excluded from replayed history; history stays capped at 10 messages.
-8. **Lint** — fixed the unused `error` binding in `useConversation.js`.
+1. **Fixed "Unknown error" generic message** — Enhanced error handler to preserve and report real underlying errors instead of replacing them with generic messages
+2. **Added development diagnostics** — Added console logging for HTTP status code, OpenAI API error code/type, safe error message, and error stage (API request, response parsing, UI rendering)
+3. **Converted to frontend-only implementation** — Removed backend proxy (`api/chat.js`) and converted to direct OpenAI SDK calls from frontend
+4. **Updated environment variable naming** — Now uses `VITE_OPENAI_API_KEY` and `VITE_OPENAI_MODEL` (documented approach)
+5. **Enhanced error mapping** — Added detection for SDK connection errors (`APIConnectionError`), 400/422, 404 (unknown model), and 429 `insufficient_quota` (out of credit); 5xx handled as a range
+6. **Robust context building** — partial/undefined `memories`, `routine`, `reminders`, `games`, or `currentTime` can no longer throw before the request
+7. **Stale-response protection** — replies in flight when the user hits *New chat* are discarded, and a pending fallback reply is cancelled on reset/unmount
+8. **History hygiene** — setup/greeting-instruction messages are excluded from replayed history; history stays capped at 10 messages
+9. **Fixed setup message display** — Setup message now shows once per conversation when API key is missing
+10. **Test suite updated** — Updated `scripts/test-aiService.mjs` to test frontend SDK calls instead of backend proxy
 
 ## Files Changed
 
 1. **`src/services/aiService.js`** - Core OpenAI SDK integration
-   - Initializes OpenAI client with API key from environment variable
+   - Initializes OpenAI client with API key from Vite environment variable
    - Implements Clara's system instructions and personality
    - Handles conversation history and context management
-   - Provides error handling for API errors (401, 403, 400, 404, 429, 5xx, network errors)
+   - Provides enhanced error handling for API errors (401, 403, 400, 404, 429, 5xx, network errors)
    - Returns structured responses with success/error status
+   - Includes development diagnostics in console logs
 
 2. **`src/services/useConversation.js`** - Chat hook integration
    - Detects when OpenAI API key is configured
@@ -55,7 +58,9 @@ Last verified: 2026-10-09 (`npm run lint`, `npm run build`, `npm run test:ai` al
 4. **`.gitignore`** - Security update
    - Added `.env`, `.env.local`, and `.env.*.local` to prevent committing API keys
 
-5. **`scripts/test-aiService.mjs`** (+ `npm run test:ai`) - Offline verification of the service layer (mocked `fetch`, no key or network required)
+5. **`scripts/test-aiService.mjs`** (+ `npm run test:ai`) - Offline verification of the service layer (mocked OpenAI SDK, no key or network required)
+
+6. **`api/chat.js`** - **REMOVED** - Backend proxy no longer needed for frontend-only implementation
 
 
 ## Setup Instructions
@@ -148,7 +153,9 @@ The integration supports multi-turn conversations by maintaining a conversation 
 
 ## Error Handling
 
-The integration handles various error scenarios. Each one is shown to the user as an honest message — a failed request is never presented as a successful reply:
+The integration handles various error scenarios. Each one is shown to the user as an honest message — a failed request is never presented as a successful reply.
+
+### User-Facing Error Messages
 
 - **API_KEY_MISSING**: Displays setup message instructing user to add API key
 - **INVALID_KEY**: API key is invalid or revoked (401/403)
@@ -161,6 +168,19 @@ The integration handles various error scenarios. Each one is shown to the user a
 - **EMPTY_MESSAGE**: User submitted empty input
 - **EMPTY_RESPONSE**: API returned no text
 - **UNKNOWN_ERROR**: Anything else; logged to the browser console (never the API key)
+
+### Development Diagnostics
+
+For debugging, the service logs detailed error information to the browser console (without exposing secrets):
+
+- HTTP status code
+- OpenAI API error code and type
+- Safe error message
+- Error constructor name
+- Whether the error occurred at API request, response parsing, or UI rendering stage
+- Limited stack trace (first 3 frames)
+
+These diagnostics help identify the root cause during development without exposing sensitive information.
 
 ## Voice Features
 

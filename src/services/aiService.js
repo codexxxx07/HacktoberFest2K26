@@ -2,8 +2,12 @@
  * AI Service for Clara - Pixel Players Memory Companion
  *
  * SECURITY NOTICE:
- * This implementation uses a backend proxy (/api/chat) to protect the API key.
- * The API key is stored server-side and never exposed to the browser.
+ * This is a frontend-only implementation using Vite environment variables.
+ *
+ * ⚠️ IMPORTANT:
+ * - VITE_ prefixed variables are exposed to the browser and are NOT secret
+ * - This approach is suitable for local development and personal use only
+ * - For production, implement a backend proxy to protect the API key
  *
  * NEVER:
  * - Hardcode a real API key in source code
@@ -12,14 +16,16 @@
  * - Include the API key in error messages
  */
 
-const API_ENDPOINT = '/api/chat';
+import OpenAI from 'openai';
+
+const MODEL = import.meta.env.VITE_OPENAI_MODEL || 'gpt-4o-mini';
+const MAX_TOKENS = 500;
 
 /**
- * Check if the backend API is available
- * For this implementation, we assume the backend is always available
+ * Check if OpenAI API key is configured
  */
 export function isConfigured() {
-  return true;
+  return !!import.meta.env.VITE_OPENAI_API_KEY;
 }
 
 /**
@@ -112,7 +118,7 @@ function buildContextData(data = {}) {
 }
 
 /**
- * Send a message to the backend API and get a response
+ * Send a message to OpenAI API and get a response
  *
  * @param {string} userMessage - The user's message
  * @param {object} appData - Application context data
@@ -120,6 +126,16 @@ function buildContextData(data = {}) {
  * @returns {Promise<object>} - Response with text and metadata
  */
 export async function getAIResponse(userMessage, appData, conversationHistory = []) {
+  // Check if API key is configured
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  if (!apiKey) {
+    return {
+      success: false,
+      error: "API_KEY_MISSING",
+      text: "Clara needs an OpenAI API key to work. Please add VITE_OPENAI_API_KEY to your .env.local file."
+    };
+  }
+
   // Validate input
   if (!userMessage || userMessage.trim() === "") {
     return {
@@ -157,35 +173,26 @@ export async function getAIResponse(userMessage, appData, conversationHistory = 
       { role: "user", content: userMessage }
     ];
 
-    // Call backend API with timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    // Initialize OpenAI client
+    const openai = new OpenAI({
+      apiKey: apiKey,
+      dangerouslyAllowBrowser: true // Required for frontend-only implementation
+    });
 
-    let response;
-    try {
-      response = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ messages }),
-        signal: controller.signal,
-      });
-    } finally {
-      clearTimeout(timeoutId);
-    }
+    console.log("[Clara Debug] Calling OpenAI API with model:", MODEL);
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-      return {
-        success: false,
-        error: "API_ERROR",
-        text: errorData.error || `Clara encountered an error (${response.status}). Please try again.`
-      };
-    }
+    // Call OpenAI API using the correct chat completions endpoint
+    const response = await openai.chat.completions.create({
+      model: MODEL,
+      messages: messages,
+      max_tokens: MAX_TOKENS,
+      temperature: 0.7,
+    });
 
-    const data = await response.json();
-    const replyText = data.reply?.trim();
+    console.log("[Clara Debug] OpenAI response received");
+
+    // Extract response text from the correct response structure
+    const replyText = response?.choices?.[0]?.message?.content?.trim() || '';
 
     if (!replyText) {
       return {
@@ -201,50 +208,97 @@ export async function getAIResponse(userMessage, appData, conversationHistory = 
     };
 
   } catch (error) {
+    console.error("[Clara Debug] OpenAI API exception:", error.name, error.message);
     return describeApiError(error);
   }
 }
 
 /**
- * Map a fetch error to a structured, user-friendly result.
+ * Map an OpenAI SDK error to a structured, user-friendly result.
  * Never includes the API key or raw request details in the message.
  */
 function describeApiError(error) {
   const message = typeof error?.message === "string" ? error.message : "";
   const errorName = error?.name;
+  const status = error?.status;
+  const errorCode = error?.code;
+  const errorType = error?.type;
 
   // Log detailed diagnostic information (safe: no API key or secrets)
   console.error("[Clara API Error Diagnostics]", {
     errorName,
     message: message || "No message",
     isConfigured: isConfigured(),
-    errorConstructor: error?.constructor?.name
+    errorConstructor: error?.constructor?.name,
+    httpStatus: status,
+    apiErrorCode: errorCode,
+    apiErrorType: errorType,
+    stack: error?.stack?.split('\n')?.slice(0, 3) // Only first 3 stack frames
   });
 
-  // Handle abort errors (timeout)
-  if (errorName === "AbortError") {
+  // Handle specific OpenAI error types
+  if (status === 401 || status === 403) {
     return {
       success: false,
-      error: "TIMEOUT",
-      text: "Clara took too long to respond. Please try again.",
+      error: "INVALID_KEY",
+      text: "Clara's API key is invalid or has been revoked. Please check your VITE_OPENAI_API_KEY in .env.local"
     };
   }
 
-  // Handle network errors
-  if (errorName === "TypeError" && /fetch|network|load failed/i.test(message)) {
+  if (status === 404) {
+    return {
+      success: false,
+      error: "MODEL_NOT_FOUND",
+      text: `The AI model '${MODEL}' is not available. Please check your OpenAI account access or set VITE_OPENAI_MODEL in .env.local`
+    };
+  }
+
+  if (status === 429) {
+    if (errorCode === "insufficient_quota" || message?.includes("quota")) {
+      return {
+        success: false,
+        error: "OUT_OF_CREDITS",
+        text: "Clara's OpenAI account has no remaining credits. Please add credits to your OpenAI account."
+      };
+    }
+    return {
+      success: false,
+      error: "RATE_LIMIT",
+      text: "Clara is receiving too many requests. Please wait a moment and try again."
+    };
+  }
+
+  if (status === 400 || status === 422) {
+    return {
+      success: false,
+      error: "INVALID_REQUEST",
+      text: `Clara couldn't process that request: ${message || "Invalid request"}`
+    };
+  }
+
+  if (status && status >= 500) {
+    return {
+      success: false,
+      error: "SERVICE_ERROR",
+      text: "OpenAI's service is temporarily unavailable. Please try again later."
+    };
+  }
+
+  // Handle network/connection errors
+  if (errorName === "APIConnectionError" || error?.constructor?.name === "APIConnectionError" || (errorName === "TypeError" && /fetch|network|load failed/i.test(message))) {
     return {
       success: false,
       error: "NETWORK_ERROR",
-      text: "Could not connect to Clara. Please check your internet connection.",
+      text: "Could not connect to OpenAI. Please check your internet connection and try again."
     };
   }
 
-  // Generic error
+  // Generic error - preserve the actual error message
   console.error("API error:", message || error);
   return {
     success: false,
     error: "UNKNOWN_ERROR",
-    text: "Something went wrong. Please try again.",
+    text: message || "Something went wrong. Please try again.",
   };
 }
 
@@ -252,9 +306,14 @@ function describeApiError(error) {
  * Get a friendly setup message when API is not configured
  */
 export function getSetupMessage() {
-  return `Clara is ready to help, but needs the backend API to be configured.
+  return `Clara is ready to help, but needs an OpenAI API key to work.
 
-The backend API endpoint (/api/chat) should be available.
-For local development, ensure your development server is running.
-For production, ensure OPENAI_API_KEY is set in your Vercel environment variables.`;
+To enable Clara:
+1. Get an API key from https://platform.openai.com/api-keys
+2. Create a .env.local file in the project root
+3. Add: VITE_OPENAI_API_KEY=your_actual_api_key_here
+4. Restart the development server (npm run dev)
+
+Note: This is a frontend-only implementation suitable for local development.
+For production, implement a backend proxy to protect the API key.`;
 }

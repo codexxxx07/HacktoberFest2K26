@@ -109,7 +109,7 @@ export default function useConversation({ user, memories, routine, reminders, ga
         if (session !== sessionRef.current) return;
 
         const id = genId("a");
-        
+
         if (response.success) {
           setMessages((prev) => [
             ...prev,
@@ -126,20 +126,43 @@ export default function useConversation({ user, memories, routine, reminders, ga
           ]);
           setStreamingId(id);
         } else {
-          // Show error message from API
-          setMessages((prev) => [
-            ...prev,
-            {
-              id,
-              role: "ai",
-              text: response.text,
-              time: nowTime(),
-              actions: [],
-              chips: [],
-              context: aiContextRef.current,
-              stream: false,
-            },
-          ]);
+          // If API key is missing, show setup message
+          if (response.error === "API_KEY_MISSING") {
+            const isFirstInteraction = !messagesRef.current.some((message) => message.context === "setup");
+            const setupMessage = isFirstInteraction ? getSetupMessage() : response.text;
+
+            setMessages((prev) => {
+              const newMessages = [...prev];
+              if (isFirstInteraction) {
+                newMessages.push({
+                  id: genId("a"),
+                  role: "ai",
+                  text: setupMessage,
+                  time: nowTime(),
+                  actions: [],
+                  chips: [],
+                  context: "setup",
+                  stream: false,
+                });
+              }
+              return newMessages;
+            });
+          } else {
+            // Show error message from API
+            setMessages((prev) => [
+              ...prev,
+              {
+                id,
+                role: "ai",
+                text: response.text,
+                time: nowTime(),
+                actions: [],
+                chips: [],
+                context: aiContextRef.current,
+                stream: false,
+              },
+            ]);
+          }
         }
       } catch (error) {
         if (session !== sessionRef.current) return;
