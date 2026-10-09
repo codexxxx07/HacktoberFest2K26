@@ -30,17 +30,20 @@ let openaiClient = null;
  */
 function initializeClient() {
   if (!API_KEY || API_KEY.trim() === "") {
+    console.error("[Clara] API key missing or empty");
     return null;
   }
 
   try {
+    console.log("[Clara] Initializing OpenAI client with key present");
     openaiClient = new OpenAI({
       apiKey: API_KEY,
       dangerouslyAllowBrowser: true, // Required for frontend-only usage
     });
+    console.log("[Clara] OpenAI client initialized successfully");
     return openaiClient;
   } catch (error) {
-    console.error("Failed to initialize OpenAI client:", error.message);
+    console.error("[Clara] Failed to initialize OpenAI client:", error.message);
     return null;
   }
 }
@@ -258,6 +261,21 @@ function describeApiError(error) {
   const status = typeof error?.status === "number" ? error.status : undefined;
   const code = typeof error?.code === "string" ? error.code : "";
   const message = typeof error?.message === "string" ? error.message : "";
+  const errorType = error?.type;
+  const requestId = error?.request_id;
+
+  // Log detailed diagnostic information (safe: no API key or secrets)
+  console.error("[Clara OpenAI Error Diagnostics]", {
+    status,
+    code,
+    errorType,
+    requestId,
+    message: message || "No message",
+    modelName: MODEL,
+    isConfigured: isConfigured(),
+    errorName: error?.name,
+    errorConstructor: error?.constructor?.name
+  });
 
   if (status === 401 || status === 403) {
     return {
@@ -291,10 +309,18 @@ function describeApiError(error) {
   }
 
   if (status === 400 || status === 422) {
+    // Log more details for 400/422 since this is the error we're seeing
+    console.error("[Clara Invalid Request Details]", {
+      errorType,
+      code,
+      message,
+      requestBody: error?.body,
+      param: error?.param
+    });
     return {
       success: false,
       error: "INVALID_REQUEST",
-      text: "Clara couldn't send that request. Please try again with a shorter message.",
+      text: `Clara couldn't send that request. (Error: ${code || message || 'Invalid request'})`,
     };
   }
 
