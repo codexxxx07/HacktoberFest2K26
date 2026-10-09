@@ -208,13 +208,22 @@ export async function getAIResponse(userMessage, appData, conversationHistory = 
       { role: "user", content: userMessage }
     ];
 
-    // Call OpenAI API (Responses API)
-    const response = await openaiClient.responses.create({
-      model: MODEL,
-      input: messages,
-      max_output_tokens: 500,
-      temperature: 0.7
-    });
+    // Call OpenAI API (Responses API) with timeout to prevent indefinite hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+    let response;
+    try {
+      response = await openaiClient.responses.create({
+        model: MODEL,
+        input: messages,
+        max_output_tokens: 500,
+        temperature: 0.7,
+        signal: controller.signal
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     // Extract response text (output_text is the SDK shortcut, fallback walks the output array)
     const fallbackText = (Array.isArray(response?.output) ? response.output : [])
