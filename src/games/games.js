@@ -20,7 +20,7 @@ export const GAMES = [
     ],
     whyThisActivity:
       "Tetris is a gentle classic that asks you to look, think and act one step at a time. There is no rushing — every move is your own decision, which can feel calm and satisfying at any age.",
-    gameUrl: "https://prithvirajguha03-ai.github.io/game-9/",
+    gameUrl: "#",
   },
   {
     id: "memory-sequence",
@@ -43,7 +43,7 @@ export const GAMES = [
     ],
     whyThisActivity:
       "Memory Sequence is a gentle watching game that becomes a quiet memory workout. It grows by just one step at a time and moves at your own pace, so it feels achievable and encouraging at any age.",
-    gameUrl: "https://prithvirajguha03-ai.github.io/game-11/",
+    gameUrl: "#",
   },
   {
     id: "stone-paper-scissor",
@@ -66,7 +66,7 @@ export const GAMES = [
     ],
     whyThisActivity:
       "Stone Paper Scissor is quick, playful and very familiar — many people already know the rules. It turns a simple choice into a light, cheerful moment that keeps the mind nimble.",
-    gameUrl: "https://prithvirajguha03-ai.github.io/game-2/",
+    gameUrl: "#",
   },
   {
     id: "colour-the-same",
@@ -89,7 +89,7 @@ export const GAMES = [
     ],
     whyThisActivity:
       "Colour matching is a quiet, visual activity that asks you to pause, look closely and compare. It is simple to follow and gives a steady sense of progress, which can be very encouraging.",
-    gameUrl: "https://prithvirajguha03-ai.github.io/game-8/",
+    gameUrl: "#",
   },
   {
     id: "spot-the-difference",
@@ -112,7 +112,7 @@ export const GAMES = [
     ],
     whyThisActivity:
       "Spot the Difference turns a gentle search into a rewarding little hunt. It invites you to look slowly and notice details, with the satisfaction of finding every hidden change.",
-    gameUrl: "https://prithvirajguha03-ai.github.io/game-6/",
+    gameUrl: "#",
   },
   {
     id: "2048",
@@ -135,7 +135,7 @@ export const GAMES = [
     ],
     whyThisActivity:
       "2048 is a thoughtful puzzle that rewards calm planning over speed. Each move is deliberate, which gives the mind space to work through a problem step by step.",
-    gameUrl: "https://prithvirajguha03-ai.github.io/game-3/",
+    gameUrl: "#",
   },
   {
     id: "chess",
@@ -158,7 +158,7 @@ export const GAMES = [
     ],
     whyThisActivity:
       "Chess invites deep, quiet thinking in a familiar and respected game. Playing against the computer lets you take your time with every move, making it a calm yet engaging mental workout.",
-    gameUrl: "https://prithvirajguha03-ai.github.io/game-4/",
+    gameUrl: "#",
   },
   {
     id: "rapid-fire-calculation",
@@ -181,7 +181,7 @@ export const GAMES = [
     ],
     whyThisActivity:
       "Rapid Fire Calculation gives numbers a playful rhythm. A short, friendly timer adds a gentle spark of energy while the questions stay simple enough to feel achievable.",
-    gameUrl: "https://prithvirajguha03-ai.github.io/game-7/",
+    gameUrl: "#",
   },
   {
     id: "memory-card-game",
@@ -204,7 +204,7 @@ export const GAMES = [
     ],
     whyThisActivity:
       "The memory card game is a beloved classic for good reason. It is gentle, visual and quiet, letting you practice recall one small step at a time while a loved one plays beside you.",
-    gameUrl: "https://prithvirajguha03-ai.github.io/game-5/",
+    gameUrl: "#",
   },
   {
     id: "running-goat",
