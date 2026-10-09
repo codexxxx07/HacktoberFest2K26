@@ -1,0 +1,163 @@
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import logoImg from "../assets/Logo.png";
+
+const platformLinks = [
+  { to: "/features", key: "nav.features" },
+  { to: "/games", key: "nav.games" },
+  { to: "/memory", key: "nav.memory" },
+  { to: "/routine", key: "nav.routine" },
+];
+
+const supportLinks = [
+  { to: "/dashboard", key: "nav.dashboard" },
+  { to: "/progress", key: "nav.progress" },
+  { to: "/support", key: "nav.support" },
+  { to: "/settings", key: "nav.settings" },
+];
+
+const aboutLinks = [
+  { to: "/about", key: "nav.about" },
+  { to: "/assistant", key: "nav.assistant" },
+  { to: "/reminders", key: "nav.reminders" },
+];
+
+export default function Footer() {
+  const { t } = useTranslation();
+  return (
+    <footer className="relative bg-(--pp-footer-bg) backdrop-blur-sm text-[#0b322c] dark:text-white shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.4)]">
+      {/* Pixel art decorative border */}
+      <div className="w-full h-3 flex">
+        <div className="flex-1 bg-teal-400" />
+        <div className="flex-1 bg-teal-500" />
+        <div className="flex-1 bg-teal-600" />
+        <div className="flex-1 bg-teal-700" />
+        <div className="flex-1 bg-amber-400" />
+        <div className="flex-1 bg-amber-500" />
+        <div className="flex-1 bg-teal-400" />
+        <div className="flex-1 bg-teal-300" />
+        <div className="flex-1 bg-teal-500" />
+        <div className="flex-1 bg-teal-600" />
+        <div className="flex-1 bg-teal-400" />
+        <div className="flex-1 bg-teal-700" />
+        <div className="flex-1 bg-amber-400" />
+        <div className="flex-1 bg-teal-500" />
+        <div className="flex-1 bg-teal-300" />
+        <div className="flex-1 bg-teal-600" />
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-12 sm:gap-12 lg:gap-8">
+          {/* Branding Column */}
+          <div className="col-span-2 md:col-span-1 lg:col-span-2">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-teal-600 border border-teal-500">
+                <img src={logoImg} alt="" className="w-full h-full object-contain rounded-lg" draggable={false} />
+                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-400 rounded-sm" />
+              </div>
+              <span className="font-pixel text-xl text-[#052e29] dark:text-[#ffffff]">
+                Pixel Players
+              </span>
+            </div>
+            <p className="text-lg mb-6 max-w-sm text-[#0a352e] dark:text-[#d6fff9]">
+              {t("footer.tagline")}
+            </p>
+            <p className="text-sm leading-relaxed max-w-sm text-[#2b1a0e] dark:text-[#eafffb]">
+              {t("footer.description")}
+            </p>
+          </div>
+
+          {/* Platform Column */}
+          <div className="text-center md:text-left">
+            <h3 className="font-pixel text-sm text-[#082f29] dark:text-[#eafffb] uppercase tracking-wider mb-4">
+              {t("footer.platform")}
+            </h3>
+            <ul className="space-y-3">
+              {platformLinks.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="pp-footer-link text-base">
+                    {t(link.key)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Support Column */}
+          <div className="text-center md:text-left">
+            <h3 className="font-pixel text-sm text-[#082f29] dark:text-[#eafffb] uppercase tracking-wider mb-4">
+              {t("footer.support")}
+            </h3>
+            <ul className="space-y-3">
+              {supportLinks.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="pp-footer-link text-base">
+                    {t(link.key)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* About Column */}
+          <div className="col-span-2 md:col-span-1 text-center md:text-left">
+            <h3 className="font-pixel text-sm text-[#082f29] dark:text-[#eafffb] uppercase tracking-wider mb-4">
+              {t("footer.explore")}
+            </h3>
+            <ul className="space-y-3">
+              {aboutLinks.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="pp-footer-link text-base">
+                    {t(link.key)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="mt-12 pt-8 border-t border-teal-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-[#4a2c17] dark:text-[#eafffb] text-sm">
+            {t("footer.copyright")}
+          </p>
+          <div className="flex items-center gap-6">
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pp-footer-link pp-footer-link--muted text-sm"
+              aria-label={t("footer.twitter")}
+            >
+              {t("footer.twitter")}
+            </a>
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pp-footer-link pp-footer-link--muted text-sm"
+              aria-label={t("footer.github")}
+            >
+              {t("footer.github")}
+            </a>
+            <a
+              href="mailto:hello@pixelplayers.com"
+              className="pp-footer-link pp-footer-link--muted text-sm"
+              aria-label={t("footer.emailLabel")}
+            >
+              {t("footer.contact")}
+            </a>
+          </div>
+        </div>
+
+        {/* SIH Credit */}
+        <div className="mt-6 text-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-teal-800 border border-teal-700 px-4 py-1.5 text-xs text-[#f0fffb] dark:bg-teal-100 dark:border-teal-300 dark:text-[#ffffff]">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            {t("footer.sihCredit")}
+          </span>
+        </div>
+      </div>
+    </footer>
+  );
+}

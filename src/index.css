@@ -1,0 +1,2222 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-pixel: "Press Start 2P", monospace;
+  --font-body: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  --color-primary: #14b8a6;
+  --color-primary-light: #2dd4bf;
+  --color-primary-lighter: #5eead4;
+  --color-primary-dark: #0d9488;
+  --color-primary-darker: #115e59;
+  --color-primary-deep: #134e4a;
+
+  --color-warm-50: #fffaf3;
+  --color-warm-100: #fdf3e3;
+  --color-warm-150: #faead3;
+  --color-warm-200: #f6dfc1;
+  --color-warm-300: #efcda3;
+  --color-warm-400: #e6b585;
+  --color-warm-500: #d99d66;
+  --color-warm-600: #c08457;
+  --color-warm-700: #a06a44;
+  --color-warm-800: #7d5235;
+  --color-warm-900: #5f3d28;
+  --color-warm-950: #3f2819;
+
+  --color-accent-memory: #60a5fa;
+  --color-accent-memory-dark: #2563eb;
+  --color-accent-attention: #fbbf24;
+  --color-accent-attention-dark: #d97706;
+  --color-accent-reasoning: #a78bfa;
+  --color-accent-reasoning-dark: #7c3aed;
+  --color-accent-language: #34d399;
+  --color-accent-language-dark: #059669;
+  --color-accent-recognition: #fb7185;
+  --color-accent-recognition-dark: #e11d48;
+  --color-accent-daily: #fb923c;
+  --color-accent-daily-dark: #ea580c;
+
+  --color-candy: #fef9f0;
+
+  --shadow-skeuo: 0 4px 0 rgba(19, 78, 74, 0.35);
+  --shadow-pixel: 4px 4px 0 rgba(19, 78, 74, 0.4);
+
+  --animate-pixel-fade-in: pixel-fade-in 0.45s ease-out both;
+  --animate-gentle-bounce: gentle-bounce 2.4s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  --animate-slide-up: slide-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-progress-fill: progress-fill 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  --nav-btn-height: 2.75rem;
+  --nav-btn-radius: 10px;
+  --nav-btn-gap: 0.625rem;
+  --nav-btn-font-size: 0.875rem;
+  --nav-btn-font-weight: 600;
+  --nav-btn-px: 1rem;
+  --nav-btn-py: 0.5rem;
+}
+
+:root {
+  color-scheme: light;
+
+  --pp-bg: #fffaf3;
+  --pp-surface: #ffffff;
+  --pp-surface-2: #fff8f0;
+  --pp-surface-tint: #fffdf7;
+  --pp-text: #5f3d28;
+  --pp-text-secondary: #7d5235;
+  --pp-text-muted: #a06a44;
+  --pp-border: #f6dfc1;
+
+  /* Semantic surfaces. Light values deliberately mirror the existing fills so
+     dropping these tokens into a rule never changes Light Mode; only `.dark`
+     gives them a distinct value. */
+  --pp-surface-elevated: #ffffff;
+  --pp-surface-hover: #fff8f0;
+  --pp-input: #ffffff;
+
+  /* Semantic accents + status. Light values are the current Tailwind shades. */
+  --pp-accent: #0d9488;
+  --pp-accent-hover: #0f766e;
+  --pp-success: #059669;
+  --pp-warning: #d97706;
+  --pp-danger: #dc2626;
+
+  --pp-ruled: rgba(95, 61, 40, 0.14);
+  --pp-navbar: rgba(255, 248, 240, 0.92);
+  /* Opaque twin of `--pp-navbar`. #fff8f0 is precisely what that 0.92 tint
+     composites to over the flat page base, so promoting it to a real fill is
+     visually a no-op on the navbar — it just removes the 8% window (and the
+     `backdrop-blur` behind it) through which the content-area photo used to
+     bleed into the navbar once anything scrolled underneath. */
+  --pp-navbar-solid: #fff8f0;
+  /* The one hairline that marks the navbar's bottom edge: navbar ends here,
+     `.site-background` begins here. Warm and low-alpha so it separates the two
+     planes without ever reading as a rule. Pairs with the header's drop
+     shadow, which does the soft half of the same job. */
+  --pp-navbar-edge: rgba(95, 61, 40, 0.18);
+  --pp-shadow-soft: rgba(63, 40, 25, 0.1);
+  --pp-lamp-shadow: rgba(63, 40, 25, 0.3);
+  /* Footer surface. Transparent: it is only a low-opacity scrim, never a fill.
+     NOTE the two themes do NOT share the same text colour. The photo is bright
+     (mean luminance ~234/255), so the light-mode stack here composites to about
+     #a9b3b0 — a LIGHT backdrop. Dark footer text is therefore required there,
+     and light text in dark mode where the stack composites to about #313e3d.
+     Footer.jsx carries the matching `dark:` shades; this scrim stays weak so the
+     photo keeps showing through in both themes. */
+  --pp-footer-bg: rgba(4, 20, 18, 0.3);
+  --pp-bg-image: url('./assets/BG.jpg');
+  --pp-bg-overlay: linear-gradient(180deg, rgba(255, 250, 243, 0.7) 0%, rgba(253, 243, 227, 0.65) 100%);
+
+  /* Skeleton system: soft warm surfaces + gentle sheen in light mode. */
+  --sk-base: linear-gradient(180deg, var(--color-warm-100), var(--color-warm-200));
+  --sk-border: var(--color-warm-300);
+  --sk-sheen: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 80%
+  );
+  --sk-inset: rgba(255, 255, 255, 0.6);
+  --sk-ink: rgba(196, 102, 0, 0.16);
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* Base + surfaces. Every value is lifted straight out of BG.jpg: the photo's
+     deepest water teal (#008090 -> darkened), the mid water (#3fcada ->
+     darkened), the pale cyan sky (#d4f8fb -> darkened). Nothing is a generic
+     grey — the whole ramp is hue-locked to the artwork. */
+  --pp-bg: #081a1e;
+  --pp-surface: rgba(23, 48, 53, 0.95);
+  --pp-surface-2: rgba(18, 40, 45, 0.95);
+  --pp-surface-tint: rgba(27, 56, 61, 0.95);
+  --pp-surface-elevated: rgba(31, 64, 70, 0.97);
+  --pp-surface-hover: rgba(37, 74, 80, 0.97);
+  --pp-input: #13292e;
+
+  --pp-text: #f8f4ea;
+  --pp-text-secondary: #c3d4d2;
+  --pp-text-muted: #a7bfbc;
+  --pp-border: rgba(58, 94, 101, 0.85);
+  --pp-ruled: rgba(190, 226, 228, 0.14);
+
+  --pp-accent: #14b8a6;
+  --pp-accent-hover: #2dd4bf;
+  --pp-success: #34d399;
+  --pp-warning: #fbbf24;
+  --pp-danger: #f87171;
+
+  /* Navbar sits directly on top of the photo, so its fill is the opaque twin
+     of the overlay's topmost stop: seamless with the sky, never a black bar. */
+  --pp-navbar: rgba(9, 30, 35, 0.96);
+  --pp-navbar-solid: #0a1e23;
+  --pp-navbar-edge: rgba(120, 190, 195, 0.22);
+  --pp-shadow-soft: rgba(3, 16, 19, 0.5);
+  --pp-lamp-shadow: rgba(2, 12, 15, 0.65);
+  /* Transparent scrim: the footer must let the photo through. The overlay is
+     already ~0.90 opaque here, so text stays on the dimmed artwork itself. */
+  --pp-footer-bg: rgba(4, 22, 26, 0.16);
+  /* Atmospheric scrim over BG.jpg. Hue-matched to the water/sky rather than a
+     flat grey wash, and deliberately thinnest (0.81) across the upper third
+     where the moon sits, so the scene still breathes behind the content.
+     With `background-attachment: fixed` this band tracks the viewport. */
+  --pp-bg-overlay: linear-gradient(
+    180deg,
+    rgba(6, 24, 28, 0.9) 0%,
+    rgba(8, 30, 35, 0.81) 28%,
+    rgba(7, 27, 32, 0.84) 58%,
+    rgba(5, 21, 25, 0.9) 100%
+  );
+
+  /* Skeleton system: teal-tinted so placeholders read as "the same material"
+     as the cards they stand in for. */
+  --sk-base: linear-gradient(180deg, #16333a, #10272d);
+  --sk-border: #26484f;
+  --sk-sheen: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.07) 50%,
+    transparent 80%
+  );
+  --sk-inset: rgba(255, 255, 255, 0.05);
+  --sk-ink: rgba(150, 220, 225, 0.1);
+}
+
+@keyframes pixel-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentle-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.5);
+  }
+  45% {
+    box-shadow: 0 0 0 14px rgba(45, 212, 191, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progress-fill {
+  from {
+    width: 0%;
+  }
+}
+
+@keyframes pixel-blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes wave-bar {
+  0%, 100% {
+    transform: scaleY(0.28);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes buddy-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes voice-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  80%, 100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes thinking-pixel {
+  0%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Flat base colour only. The photo lives on `.site-background`; this just
+       backs the strips the content column does not cover (caregiver shell, boot
+       shell, rubber-band overscroll) so nothing ever flashes white. */
+    background-color: var(--pp-bg);
+  }
+
+  /* ─── Content-area background ────────────────────────────────────────────
+     Exactly one element owns the photo: `.site-background`. It is the wrapper
+     that begins directly below the navbar and spans <main> + <Footer>. Nothing
+     else paints the image — not <body>, not <html>, not the navbar, not the
+     footer:
+
+         navbar │ .site-background ── photo + overlay ──┐
+                 │  ├─ <main>   full page content        │ starts at the
+                 │  └─ <footer> transparent, photo shows │ navbar's bottom
+                 └───────────────────────────────────────┘
+
+     Because it is an ordinary background on an ordinary element it is clipped to
+     that element's own border box, so on every route and at every viewport size
+     the image starts exactly at the navbar's bottom edge and cannot reach
+     behind the navbar. It spans the footer too, which is how one and the same
+     photo shows through the footer's transparent scrim — no second image, no
+     second declaration, no seam between main and footer.
+
+     The wrapper is an in-flow sibling of the navbar, never a sibling of it
+     layered underneath it, so the boundary is structural: whatever height the
+     navbar takes — 80px on desktop, whatever the pull cord and the hamburger
+     need on a phone — the photo simply begins at whatever comes next. No
+     hard-coded offset, no JS measuring, nothing to fall out of sync.
+
+     The wrapper's height is content-driven (`flex-1` inside the `min-h-screen`
+     column), never a forced viewport height, so long pages are never clipped.
+
+     `background-attachment: fixed` is safe here *because* of that clipping. It
+     widens the positioning area to the viewport (which is what makes the photo
+     hold still while Lenis scrolls instead of sliding away), but the paint area
+     is still the wrapper's border box. It does mean that mid-scroll the photo
+     slides *behind* the sticky navbar — which is exactly why the navbar carries
+     its own opaque fill (`.navbar-surface`) instead of a translucent tint.
+
+     The two layers are one paint: the theme overlay first, the photo second.
+     `--pp-bg-overlay` carries the light/dark overlay, so it flips with the
+     theme without a second rule. */
+  .site-background {
+    background-color: var(--pp-bg);
+    background-image: var(--pp-bg-overlay), var(--pp-bg-image);
+    background-size: auto, cover;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    background-attachment: fixed, fixed;
+  }
+
+  /* ─── Navbar: opaque, and unambiguously its own plane ───────────────────
+     The navbar sits *outside* `.site-background` in the flow, so the photo
+     never paints under it — except that `background-attachment: fixed` means
+     the photo does slide behind the sticky navbar mid-scroll. A translucent
+     `bg-(--pp-navbar)` plus `backdrop-blur-sm` turned that into a milky wash
+     across the navbar, and because the top of the photo is very light the
+     navbar and the image dissolved into each other.
+
+     So the navbar gets a solid layer of its own. It is a `background-image`
+     rather than a pseudo-element or a stacked layer, which is deliberate: an
+     image layer always paints above the element's `background-color` in the
+     same box, so it covers the `--pp-navbar` tint and the backdrop blur behind
+     it without depending on stacking order, a negative `z-index`, or a stacking
+     context that the `backdrop-filter` happens to create. Nothing can get
+     between the fill and the content, and the 1px bottom border — the hairline
+     that draws the boundary — is untouched because borders sit outside the
+     background layers entirely.
+
+     `--pp-navbar-solid` is byte-for-byte the colour that tint already resolved
+     to over the page base, so nothing about the navbar's appearance moves. It
+     only stops being see-through. */
+  .navbar-surface {
+    background-image: linear-gradient(var(--pp-navbar-solid), var(--pp-navbar-solid));
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-warm-900);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    /* Flat base colour only, and deliberately NO photo. This is the belt to the
+       navbar's braces: the navbar is sticky, so anything painted on <body>
+       would sit behind it for the whole scroll. The photo belongs to
+       `.site-background`, which starts below the navbar's bottom edge. */
+    background-color: var(--pp-bg);
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  .pixel-grid {
+    background-image:
+      linear-gradient(rgba(20, 184, 166, 0.08) 2px, transparent 2px),
+      linear-gradient(90deg, rgba(20, 184, 166, 0.08) 2px, transparent 2px);
+    background-size: 28px 28px;
+  }
+
+  ::selection {
+    background-color: var(--color-primary-lighter);
+    color: var(--color-warm-950);
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-warm-100);
+    border-radius: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-primary-light);
+    border-radius: 8px;
+    border: 3px solid var(--color-warm-100);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: var(--color-primary-dark);
+  }
+}
+
+@layer components {
+  .auth-shell .cl-rootBox,
+  .auth-shell .cl-cardBox,
+  .auth-shell .cl-signIn-root,
+  .auth-shell .cl-signUp-root {
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .auth-shell .cl-cardBox {
+    display: flex !important;
+    justify-content: center !important;
+    max-width: 28rem !important;
+    margin-inline: auto !important;
+  }
+
+  /* ─── Premium skeleton system ────────────────────────────────────────────
+     Page-accurate loading placeholders. Surfaces come from the --sk-* token
+     family (light: soft warm; dark: soft slate). A single, slow sheen sweeps
+     across each block; it is fully disabled for reduced-motion users. */
+  .sk {
+    position: relative;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    background: var(--sk-base);
+    border: 1px solid var(--sk-border);
+    box-shadow: inset 0 1px 0 var(--sk-inset);
+  }
+
+  .sk::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: var(--sk-sheen);
+    animation: sk-sweep 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .sk-skew {
+    border-radius: 2px;
+  }
+
+  /* Card scaffold: like .sk but usable as a drop-in card surface that
+     hosts inner placeholder lines. */
+  .sk-card {
+    display: block;
+  }
+
+  /* Inner bars (text lines, icons inside a card) — calm, flat, sheen-free
+     so the sweep lives only on the outermost surfaces. */
+  .sk-inner {
+    background: var(--sk-ink);
+    border: none;
+    box-shadow: none;
+  }
+
+  .sk-inner::before {
+    content: none;
+  }
+
+  @keyframes sk-sweep {
+    0% {
+      transform: translateX(-100%);
+    }
+    55%,
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sk::before {
+      animation: none;
+    }
+  }
+
+  .skeuo-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--color-warm-900);
+    background: linear-gradient(180deg, var(--color-warm-100), var(--color-warm-200));
+    border: 2px solid var(--color-warm-300);
+    border-radius: 14px;
+    padding: 0.85rem 1.5rem;
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.6),
+      0 4px 0 var(--color-warm-400),
+      0 8px 14px rgba(63, 40, 25, 0.12);
+    transition:
+      transform 90ms ease,
+      box-shadow 90ms ease,
+      background-color 200ms ease,
+      color 200ms ease;
+    user-select: none;
+    touch-action: manipulation;
+  }
+
+  .skeuo-btn:hover {
+    background: linear-gradient(180deg, var(--color-warm-200), var(--color-warm-300));
+    transform: translateY(-1px);
+  }
+
+  .skeuo-btn:active,
+  .skeuo-btn-pressed {
+    transform: translateY(3px);
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.3),
+      0 1px 0 var(--color-warm-400),
+      0 2px 4px rgba(63, 40, 25, 0.16);
+  }
+
+  .skeuo-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.4),
+      0 4px 0 var(--color-warm-300);
+  }
+
+  .skeuo-btn-primary {
+    color: var(--color-warm-50);
+    background: linear-gradient(180deg, var(--color-primary-light), var(--color-primary));
+    border-color: var(--color-primary-dark);
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.35),
+      0 4px 0 var(--color-primary-darker),
+      0 8px 16px rgba(13, 148, 136, 0.3);
+  }
+
+  .skeuo-btn-primary:hover {
+    background: linear-gradient(180deg, var(--color-primary-lighter), var(--color-primary-light));
+    color: var(--color-warm-50);
+  }
+
+  .skeuo-btn-primary:active,
+  .skeuo-btn-primary.skeuo-btn-pressed {
+    transform: translateY(3px);
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.2),
+      0 1px 0 var(--color-primary-darker),
+      0 2px 5px rgba(13, 148, 136, 0.35);
+  }
+
+  .skeuo-btn-sos {
+    color: #fff;
+    background: linear-gradient(180deg, #f87171, #dc2626);
+    border-color: #991b1b;
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.35),
+      0 4px 0 #7f1d1d,
+      0 8px 16px rgba(153, 27, 27, 0.3);
+  }
+
+  .skeuo-btn-sos:hover {
+    background: linear-gradient(180deg, #fca5a5, #ef4444);
+    color: #fff;
+  }
+
+  .skeuo-btn-sos:active,
+  .skeuo-btn-sos.skeuo-btn-pressed {
+    transform: translateY(3px);
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.2),
+      0 1px 0 #7f1d1d,
+      0 2px 5px rgba(153, 27, 27, 0.35);
+  }
+
+  .skeuo-btn-pixel {
+    font-family: var(--font-pixel);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .skeuo-btn-block {
+    width: 100%;
+  }
+
+  .skeuo-btn-ghost {
+    background: transparent;
+    border-color: var(--color-primary-dark);
+    color: var(--color-primary-darker);
+    box-shadow: none;
+  }
+
+  .skeuo-btn-ghost:hover {
+    background: rgba(20, 184, 166, 0.08);
+  }
+
+  .skeuo-btn-ghost:active,
+  .skeuo-btn-ghost.skeuo-btn-pressed {
+    transform: translateY(2px);
+    box-shadow: none;
+  }
+
+  /* Dark-mode skeuo buttons. `warm-400` / `primary-darker` flip to bright
+     values in the dark palette (they are *text* colours), so their job as the
+     4px raised edge would invert into a light strip under the button. Pin the
+     edge dark and drop the white top sheen to a whisper. */
+  .dark .skeuo-btn {
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.12),
+      0 4px 0 #0d2126,
+      0 8px 14px rgba(3, 16, 19, 0.45);
+  }
+
+  .dark .skeuo-btn:active,
+  .dark .skeuo-btn-pressed {
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.07),
+      0 1px 0 #0d2126,
+      0 2px 4px rgba(3, 16, 19, 0.5);
+  }
+
+  .dark .skeuo-btn:disabled {
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.07),
+      0 4px 0 #0d2126;
+  }
+
+  .dark .skeuo-btn-primary {
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.32),
+      0 4px 0 #0b7f74,
+      0 8px 16px rgba(3, 40, 42, 0.55);
+  }
+
+  .dark .skeuo-btn-primary:active,
+  .dark .skeuo-btn-primary.skeuo-btn-pressed {
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.18),
+      0 1px 0 #0b7f74,
+      0 2px 5px rgba(3, 40, 42, 0.6);
+  }
+
+  .skeuo-card {
+    position: relative;
+    background: linear-gradient(180deg, rgba(255, 249, 240, 0.92), rgba(253, 243, 227, 0.88));
+    border: 2px solid var(--color-warm-200);
+    border-radius: 20px;
+    padding: 1.25rem;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.7),
+      0 4px 0 var(--color-warm-300),
+      0 10px 20px rgba(63, 40, 25, 0.08);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    transition:
+      transform 200ms ease,
+      box-shadow 200ms ease,
+      border-color 200ms ease;
+  }
+
+  .dark .skeuo-card {
+    background: linear-gradient(180deg, var(--pp-surface-elevated), rgba(23, 48, 53, 0.95));
+    border-color: rgba(78, 124, 131, 0.85);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 4px 0 #0d2126,
+      0 10px 24px rgba(3, 16, 19, 0.45);
+  }
+
+  .skeuo-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-primary-lighter);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.7),
+      0 6px 0 var(--color-warm-300),
+      0 16px 30px rgba(63, 40, 25, 0.12);
+  }
+
+  .dark .skeuo-card:hover {
+    border-color: var(--color-primary);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 6px 0 #0d2126,
+      0 16px 30px rgba(3, 16, 19, 0.55);
+  }
+
+  .skeuo-card-inset {
+    background: linear-gradient(180deg, rgba(253, 243, 227, 0.88), rgba(250, 234, 211, 0.84));
+    border: 2px solid var(--color-warm-200);
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow:
+      inset 0 3px 8px rgba(63, 40, 25, 0.1),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  .dark .skeuo-card-inset {
+    background: linear-gradient(180deg, rgba(18, 40, 45, 0.96), rgba(16, 36, 40, 0.94));
+    border-color: rgba(70, 112, 119, 0.8);
+    box-shadow:
+      inset 0 3px 8px rgba(0, 0, 0, 0.35),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .skeuo-card-inset:hover {
+    transform: none;
+    border-color: var(--color-warm-300);
+  }
+
+  .pixel-border {
+    position: relative;
+    image-rendering: pixelated;
+    border: 4px solid var(--color-warm-900);
+    border-radius: 0;
+    box-shadow:
+      inset 4px 4px 0 rgba(255, 255, 255, 0.35),
+      inset -4px -4px 0 rgba(0, 0, 0, 0.12);
+  }
+
+  .pixel-border-teal {
+    border: 4px solid var(--color-primary-deep);
+    box-shadow:
+      inset 4px 4px 0 rgba(255, 255, 255, 0.3),
+      inset -4px -4px 0 rgba(0, 0, 0, 0.15);
+  }
+
+  .pixel-shadow {
+    box-shadow: 6px 6px 0 rgba(19, 78, 74, 0.4);
+  }
+
+  .pixel-shadow-warm {
+    box-shadow: 6px 6px 0 rgba(160, 106, 68, 0.35);
+  }
+
+  .pixel-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-pixel);
+    font-size: 0.6rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.75rem;
+    background: var(--color-warm-800);
+    color: var(--color-warm-100);
+    box-shadow: 3px 3px 0 rgba(63, 40, 25, 0.5);
+  }
+
+  .voice-listening {
+    animation: pulse-ring 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .animate-pixel-fade-in {
+    animation: pixel-fade-in 0.45s ease-out both;
+  }
+
+  .animate-gentle-bounce {
+    animation: gentle-bounce 2.4s ease-in-out infinite;
+  }
+
+  .animate-pulse-ring {
+    animation: pulse-ring 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .pixel-blink {
+    animation: pixel-blink 1s steps(1) infinite;
+  }
+
+  .page-enter {
+    animation: pixel-fade-in 0.45s ease-out both;
+  }
+
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.1s; }
+  .stagger-3 { animation-delay: 0.15s; }
+  .stagger-4 { animation-delay: 0.2s; }
+  .stagger-5 { animation-delay: 0.25s; }
+  .stagger-6 { animation-delay: 0.3s; }
+
+  .progress-track {
+    position: relative;
+    height: 0.8rem;
+    background: var(--color-warm-200);
+    border: 2px solid var(--color-warm-300);
+    border-radius: 9999px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(63, 40, 25, 0.12);
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--color-primary-light), var(--color-primary-dark));
+    animation: progress-fill 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.35),
+      0 1px 3px rgba(13, 148, 136, 0.35);
+  }
+
+  .dark .progress-track {
+    box-shadow: inset 0 2px 4px rgba(3, 16, 19, 0.55);
+  }
+
+  .category-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-pixel);
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.45rem 0.7rem;
+    border-radius: 9999px;
+    border: 2px solid transparent;
+  }
+
+  .chip-memory {
+    background: rgba(96, 165, 250, 0.14);
+    color: var(--color-accent-memory-dark);
+    border-color: var(--color-accent-memory);
+  }
+
+  .chip-attention {
+    background: rgba(251, 191, 36, 0.14);
+    color: var(--color-accent-attention-dark);
+    border-color: var(--color-accent-attention);
+  }
+
+  .chip-reasoning {
+    background: rgba(167, 139, 250, 0.14);
+    color: var(--color-accent-reasoning-dark);
+    border-color: var(--color-accent-reasoning);
+  }
+
+  .chip-language {
+    background: rgba(52, 211, 153, 0.14);
+    color: var(--color-accent-language-dark);
+    border-color: var(--color-accent-language);
+  }
+
+  .chip-recognition {
+    background: rgba(251, 113, 133, 0.14);
+    color: var(--color-accent-recognition-dark);
+    border-color: var(--color-accent-recognition);
+  }
+
+  .chip-daily {
+    background: rgba(251, 146, 60, 0.14);
+    color: var(--color-accent-daily-dark);
+    border-color: var(--color-accent-daily);
+  }
+
+  .card-title {
+    font-family: var(--font-pixel);
+    font-size: 0.72rem;
+    line-height: 1.65;
+    color: var(--color-teal-800);
+  }
+
+  .card-body {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-warm-700);
+  }
+
+  .card-meta {
+    font-family: var(--font-body);
+    font-size: 0.825rem;
+    line-height: 1.4;
+    color: var(--color-warm-500);
+  }
+
+  .card-grow {
+    flex: 1 1 auto;
+  }
+
+  .card-cta {
+    margin-top: auto;
+  }
+
+  .skeuo-card-pad {
+    padding: 1.5rem;
+  }
+
+  .font-pixel {
+    font-family: var(--font-pixel);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: var(--nav-btn-height);
+    padding: var(--nav-btn-py) var(--nav-btn-px);
+    font-family: var(--font-body);
+    font-size: var(--nav-btn-font-size);
+    font-weight: var(--nav-btn-font-weight);
+    line-height: 1;
+    border-radius: var(--nav-btn-radius);
+    border: 2px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    user-select: none;
+    touch-action: manipulation;
+    transition:
+      background 150ms ease,
+      color 150ms ease,
+      border-color 150ms ease,
+      box-shadow 150ms ease,
+      transform 80ms ease;
+  }
+
+  .nav-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .nav-btn:active {
+    transform: translateY(1px);
+  }
+
+  .nav-btn:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .nav-btn-login {
+    background: transparent;
+    border-color: var(--color-primary-dark);
+    color: var(--color-primary-darker);
+  }
+
+  .nav-btn-login:hover {
+    background: rgba(20, 184, 166, 0.08);
+    border-color: var(--color-primary);
+    color: var(--color-primary-dark);
+  }
+
+  .nav-btn-login:active {
+    background: rgba(20, 184, 166, 0.14);
+    transform: translateY(1px);
+  }
+
+  .nav-btn-login:focus-visible {
+    outline-color: var(--color-primary);
+  }
+
+  .nav-btn-signup {
+    color: var(--color-warm-50);
+    background: linear-gradient(180deg, var(--color-primary-light), var(--color-primary));
+    border-color: var(--color-primary-dark);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      0 2px 0 var(--color-primary-darker),
+      0 4px 10px rgba(13, 148, 136, 0.25);
+  }
+
+  .nav-btn-signup:hover {
+    background: linear-gradient(180deg, var(--color-primary-lighter), var(--color-primary-light));
+    border-color: var(--color-primary);
+    color: var(--color-warm-50);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.35),
+      0 3px 0 var(--color-primary-darker),
+      0 6px 14px rgba(13, 148, 136, 0.3);
+  }
+
+  .nav-btn-signup:active {
+    transform: translateY(2px);
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.2),
+      0 1px 0 var(--color-primary-darker),
+      0 2px 6px rgba(13, 148, 136, 0.3);
+  }
+
+  .nav-btn-signup:focus-visible {
+    outline-color: var(--color-primary-light);
+  }
+
+  .nav-btn-sos {
+    color: #fff;
+    background: linear-gradient(180deg, #f87171, #dc2626);
+    border-color: #991b1b;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      0 2px 0 #7f1d1d,
+      0 4px 8px rgba(153, 27, 27, 0.18);
+  }
+
+  .nav-btn-sos:hover {
+    background: linear-gradient(180deg, #fca5a5, #ef4444);
+    border-color: #dc2626;
+    color: #fff;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.35),
+      0 3px 0 #7f1d1d,
+      0 5px 10px rgba(153, 27, 27, 0.22);
+  }
+
+  .nav-btn-sos:active {
+    transform: translateY(2px);
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.2),
+      0 1px 0 #7f1d1d,
+      0 2px 6px rgba(153, 27, 27, 0.3);
+  }
+
+  .nav-btn-sos:focus-visible {
+    outline-color: #f87171;
+  }
+
+  .nav-btn-pixel {
+    font-family: var(--font-pixel);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .buddy-chat-bg {
+    background-image:
+      linear-gradient(rgba(20, 184, 166, 0.045) 2px, transparent 2px),
+      linear-gradient(90deg, rgba(20, 184, 166, 0.045) 2px, transparent 2px);
+    background-size: 26px 26px;
+  }
+
+  .wave-bar {
+    transform-origin: 50% 100%;
+    animation: wave-bar 0.9s ease-in-out infinite;
+  }
+
+  .animate-buddy-float {
+    animation: buddy-float 2.6s ease-in-out infinite;
+  }
+
+  .voice-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 3px solid currentColor;
+    animation: voice-ring 1.7s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+
+  .thinking-pixel {
+    animation: thinking-pixel 1.1s ease-in-out infinite;
+  }
+
+  .animate-caret-blink {
+    animation: pixel-blink 1s steps(1) infinite;
+  }
+
+  .buddy-bubble {
+    position: relative;
+    background: linear-gradient(180deg, var(--color-warm-50), var(--color-warm-100));
+    border: 2px solid var(--color-warm-200);
+    border-radius: 18px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      0 2px 0 rgba(196, 132, 87, 0.18),
+      0 10px 22px rgba(63, 40, 25, 0.07);
+  }
+
+  .dark .buddy-bubble {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 2px 0 #0d2126,
+      0 10px 22px rgba(3, 16, 19, 0.4);
+  }
+
+  /* ------------------------------------------------------------------
+     Footer link hover — Footer.jsx ONLY.
+     Noticeably darker text in light mode / brighter white in dark mode,
+     a 2px lift and a pre-laid-out underline that fades in (no reflow).
+     Hover is gated behind (hover: hover) so touch devices never stick in
+     a hover state, and :focus-visible carries its own indicator so
+     keyboard users never depend on :hover. Durations stay in the
+     180–250ms range with a plain ease — smooth, never bouncy.
+  ------------------------------------------------------------------ */
+  .pp-footer-link {
+    display: inline-block;
+    color: #0b322c;
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    transition:
+      color 220ms ease,
+      transform 220ms ease,
+      text-decoration-color 220ms ease,
+      text-shadow 220ms ease;
+  }
+
+  /* Secondary footer row: Twitter / GitHub / Contact. */
+  .pp-footer-link--muted {
+    color: #4a2c17;
+  }
+
+  .dark .pp-footer-link {
+    color: #e9fffc;
+  }
+
+  .dark .pp-footer-link--muted {
+    color: #cfe9e6;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pp-footer-link:hover {
+      color: #04211d;
+      transform: translateY(-2px);
+      text-decoration-color: currentColor;
+    }
+
+    .pp-footer-link--muted:hover {
+      color: #2b190e;
+    }
+
+    .dark .pp-footer-link:hover {
+      color: #ffffff;
+    }
+
+    .dark .pp-footer-link--muted:hover {
+      color: #ffffff;
+    }
+  }
+
+  .pp-footer-link:active {
+    transform: translateY(0);
+  }
+
+  .pp-footer-link:focus-visible {
+    color: #04211d;
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+    text-decoration-color: currentColor;
+  }
+
+  .pp-footer-link--muted:focus-visible {
+    color: #2b190e;
+  }
+
+  .dark .pp-footer-link:focus-visible {
+    color: #ffffff;
+    outline-color: var(--color-primary-light);
+  }
+
+  .dark .pp-footer-link--muted:focus-visible {
+    color: #ffffff;
+    outline-color: var(--color-primary-light);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ─── Scroll experience (Lenis + retro/Y2K reveals) ────────────────────────
+   Driven by src/context/ScrollContext.jsx. Pages only declare intent with
+   data attributes; the single Lenis instance, the single rAF-synced scroll
+   bus and the single IntersectionObserver all live in that provider.
+
+   Contract:
+     data-pp-reveal            entrance variant, see the variant rules below
+     data-pp-reveal-group      staggers its direct [data-pp-reveal] children
+     data-pp-drift="0.6"       clamped decorative scroll drift (set from JS)
+
+   Two guarantees, in order of importance:
+     1. Content is visible by default. The hidden state is scoped to
+        `html.pp-reveal-armed`, a class the provider adds only once the
+        observer is live — so blocked/failed JS can never hide a page.
+     2. Entrances are keyframe animations, never transitions, so the element's
+        own `transition-*` utilities (card hover lift, theme colour crossfades)
+        keep their exact existing timing.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --pp-reveal-dur: 620ms;
+  --pp-reveal-pixel-dur: 480ms;
+  --pp-reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --pp-reveal-shift: 14px;
+}
+
+/* Lenis base styles (mirrors lenis' own stylesheet) + one addition: the app
+   sets `html { scroll-behavior: smooth }` for native anchor jumps, which
+   makes the browser animate every programmatic scroll Lenis issues. Neutralise
+   it for as long as Lenis owns the scroll position. */
+html.lenis,
+html.lenis body {
+  height: auto;
+  scroll-behavior: auto !important;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+/* ─── Reveal: hidden resting state (only while armed) ─────────────────────── */
+
+html.pp-reveal-armed [data-pp-reveal]:not(.pp-reveal-in) {
+  opacity: 0;
+  transform: translateY(var(--pp-reveal-shift));
+}
+
+html.pp-reveal-armed [data-pp-reveal="drop"]:not(.pp-reveal-in) {
+  transform: translateY(calc(var(--pp-reveal-shift) * -0.55));
+}
+
+html.pp-reveal-armed [data-pp-reveal="left"]:not(.pp-reveal-in) {
+  transform: translateX(calc(var(--pp-reveal-shift) * -1.35));
+}
+
+html.pp-reveal-armed [data-pp-reveal="right"]:not(.pp-reveal-in) {
+  transform: translateX(calc(var(--pp-reveal-shift) * 1.35));
+}
+
+html.pp-reveal-armed [data-pp-reveal="zoom"]:not(.pp-reveal-in) {
+  transform: scale(0.972);
+}
+
+html.pp-reveal-armed [data-pp-reveal="pixel"]:not(.pp-reveal-in) {
+  transform: translateY(5px) scale(0.986);
+}
+
+/* ─── Reveal: entrance (keyframes, `backwards` fill only) ─────────────────
+   `backwards` means the fill is dropped the moment the animation ends, so the
+   element returns to its own cascade — hover transforms and Tailwind
+   `transition-*` utilities work normally from that point on. */
+
+html.pp-reveal-armed [data-pp-reveal].pp-reveal-in {
+  animation: pp-reveal-rise var(--pp-reveal-dur) var(--pp-reveal-ease)
+    var(--pp-reveal-delay, 0ms) backwards;
+}
+
+html.pp-reveal-armed [data-pp-reveal="drop"].pp-reveal-in {
+  animation-name: pp-reveal-drop;
+}
+
+html.pp-reveal-armed [data-pp-reveal="left"].pp-reveal-in {
+  animation-name: pp-reveal-left;
+}
+
+html.pp-reveal-armed [data-pp-reveal="right"].pp-reveal-in {
+  animation-name: pp-reveal-right;
+}
+
+html.pp-reveal-armed [data-pp-reveal="zoom"].pp-reveal-in {
+  animation-name: pp-reveal-zoom;
+}
+
+/* The pixel variant snaps in discrete frames — the same stepped timing the
+   caret blink already uses — for a sprite-like "powering up" entrance. */
+html.pp-reveal-armed [data-pp-reveal="pixel"].pp-reveal-in {
+  animation-name: pp-reveal-pixel;
+  animation-duration: var(--pp-reveal-pixel-dur);
+  animation-timing-function: steps(5, end);
+}
+
+@keyframes pp-reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--pp-reveal-shift));
+  }
+}
+
+@keyframes pp-reveal-drop {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--pp-reveal-shift) * -0.55));
+  }
+}
+
+@keyframes pp-reveal-left {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--pp-reveal-shift) * -1.35));
+  }
+}
+
+@keyframes pp-reveal-right {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--pp-reveal-shift) * 1.35));
+  }
+}
+
+@keyframes pp-reveal-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.972);
+  }
+}
+
+@keyframes pp-reveal-pixel {
+  from {
+    opacity: 0;
+    transform: translateY(5px) scale(0.986);
+  }
+}
+
+/* ─── Reveal: stagger groups (pure CSS, capped so long lists stay snappy) ── */
+
+[data-pp-reveal-group] > [data-pp-reveal]:nth-child(1) { --pp-reveal-delay: 0ms; }
+[data-pp-reveal-group] > [data-pp-reveal]:nth-child(2) { --pp-reveal-delay: 60ms; }
+[data-pp-reveal-group] > [data-pp-reveal]:nth-child(3) { --pp-reveal-delay: 120ms; }
+[data-pp-reveal-group] > [data-pp-reveal]:nth-child(4) { --pp-reveal-delay: 180ms; }
+[data-pp-reveal-group] > [data-pp-reveal]:nth-child(5) { --pp-reveal-delay: 240ms; }
+[data-pp-reveal-group] > [data-pp-reveal]:nth-child(6) { --pp-reveal-delay: 300ms; }
+[data-pp-reveal-group] > [data-pp-reveal]:nth-child(7) { --pp-reveal-delay: 360ms; }
+[data-pp-reveal-group] > [data-pp-reveal]:nth-child(8) { --pp-reveal-delay: 420ms; }
+[data-pp-reveal-group] > [data-pp-reveal]:nth-child(9) { --pp-reveal-delay: 480ms; }
+[data-pp-reveal-group] > [data-pp-reveal]:nth-child(n + 10) { --pp-reveal-delay: 520ms; }
+
+/* ─── Decorative drift (parallax) ─────────────────────────────────────────
+   The transform is written straight from the Lenis scroll bus, so these nodes
+   need no transition of their own — adding one would fight the rAF loop. */
+
+[data-pp-drift] {
+  will-change: transform;
+}
+
+/* ─── Scroll-linked fade (continuous, reversible) ──────────────────────────
+   Driven by src/context/ScrollContext.jsx from the same Lenis 'scroll' bus as
+   the drift above. The element's opacity is a pure function of how much of the
+   block has crossed the bottom edge (in) and how much is hanging off the top
+   edge (out), so it reverses on its own and never gets stuck.
+
+   Contract:
+     data-pp-fade           opt a major block into the continuous fade
+     --pp-fade-span         fade travel, in viewport-heights. The block's own
+                            height is used when that is smaller, which is what
+                            keeps a card crisp and a full-height panel gentle.
+
+   Only opacity is touched: no transform, no filter, no blur, no layout. Because
+   opacity is a compositing-only property this cannot cause reflow, cannot shift
+   layout and cannot produce horizontal overflow.
+
+   Deliberately NOT applied to the navbar, the footer nav, the SOS button, auth
+   controls, or anything else whose visibility a reader depends on. */
+
+:root {
+  /* Read by the engine, and the single knob for how cinematic the fade is.
+     A card still fades across its own height; this only governs tall blocks. */
+  --pp-fade-span: 0.45;
+}
+
+/* Pre-measurement safety net, exactly like the reveal layer: a block is only
+   hidden until the engine has written a real opacity to it (`pp-fade-on`). The
+   armed class lands after the first measure+write pass, and if JS never runs
+   the class is never added — so a blocked script shows the page, not a blank
+   one. It is deliberately NOT !important, so the engine's inline write always
+   wins for a settled block. */
+html.pp-fade-armed [data-pp-fade]:not(.pp-fade-on) {
+  opacity: 0;
+}
+
+/* ─── Navbar scroll-progress rail ────────────────────────────────────────
+   A 3px segmented HUD strip that fills with page progress. Absolutely
+   positioned against the sticky header, so it adds zero layout height. */
+
+.pp-scroll-progress {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 3px;
+  overflow: hidden;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--pp-ruled) 0 20px,
+    transparent 20px 24px
+  );
+}
+
+.pp-scroll-progress__fill {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-primary-light),
+    var(--color-primary),
+    var(--color-accent-attention)
+  );
+  box-shadow: 0 0 8px var(--pp-shadow-soft);
+}
+
+/* ─── Mobile: soften the movement rather than removing it ─────────────────── */
+
+@media (max-width: 640px) {
+  :root {
+    --pp-reveal-dur: 520ms;
+    --pp-reveal-pixel-dur: 420ms;
+    --pp-reveal-shift: 10px;
+  }
+
+  [data-pp-reveal-group] > [data-pp-reveal]:nth-child(n + 7) {
+    --pp-reveal-delay: 360ms;
+  }
+}
+
+/* Phones get a shorter fade travel. On a narrow viewport almost every block is
+   "tall" relative to the screen, so this is the value that actually applies �?"
+   and shortening it keeps blocks from lingering in a half-faded state through a
+   thumb-fling. Touch itself is untouched: Lenis still runs with `syncTouch:
+   false`, so momentum, rubber-banding and nested panes stay native. */
+@media (max-width: 768px) {
+  :root {
+    --pp-fade-span: 0.34;
+  }
+  /* Phones do not get the viewport-locked attachment: iOS Safari ignores it
+     outright, and on Android it forces a full repaint on every scroll frame.
+     Instead the photo is sized to the content width so its aspect ratio stays
+     intact (never stretched down a long page) and tiled down the column, which
+     keeps long pages fully covered with no blank gap. One rule covers the whole
+     wrapper — <main> and the transparent footer below it — so the tiling is
+     continuous across both and the navbar/footer boundary is identical to
+     desktop. */
+  .site-background {
+    background-attachment: scroll, scroll;
+    background-size: auto, 100% auto;
+    background-position: center, center top;
+    background-repeat: no-repeat, repeat-y;
+  }
+}
+
+/* ─── Reduced motion: the hard guarantee ──────────────────────────────────
+   The provider already skips Lenis and never arms the reveals or the fade when
+   the user prefers reduced motion. This block is the second line of defence:
+   even if the armed class were ever applied, nothing can be left invisible. */
+
+@media (prefers-reduced-motion: reduce) {
+  html.pp-reveal-armed [data-pp-reveal],
+  html.pp-reveal-armed [data-pp-reveal]:not(.pp-reveal-in) {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  [data-pp-reveal-group] > [data-pp-reveal] {
+    --pp-reveal-delay: 0ms !important;
+  }
+
+  [data-pp-drift] {
+    will-change: auto;
+  }
+
+  /* The fade writes an inline opacity, so the guarantee has to clear the
+     inline style too — and drop the marker that would otherwise let the
+     safety-net rule above keep the block hidden. */
+  html.pp-fade-armed [data-pp-fade],
+  html.pp-fade-armed [data-pp-fade]:not(.pp-fade-on) {
+    opacity: 1 !important;
+  }
+}
+
+@layer utilities {
+  .overflow-wrap-anywhere {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* Ensure every direct child of a flex row can shrink below its content size */
+  .min-w-0 {
+    min-width: 0;
+  }
+
+  /* Mobile-safe box-sizing reset (already browser default but explicit here) */
+  .box-border {
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 640px) {
+  .memory-tab-strip {
+    /* Safety: never let the strip's scroll area push beyond the page */
+    max-width: 100vw;
+  }
+}
+
+.dark {
+  /* Warm scale. Structure (50–300) stays hue-locked to the photo's water
+     teals so borders actually separate from the card; ink (400–950) turns
+     into the warm ivory the brand uses in Light Mode, so headings keep their
+     warmth instead of going clinical white. */
+  --color-warm-50: #14282c;
+  --color-warm-100: #183034;
+  --color-warm-150: #1c363a;
+  --color-warm-200: #2f4d52;
+  --color-warm-300: #406166;
+  --color-warm-400: #9a9689;
+  --color-warm-500: #b0ab9c;
+  --color-warm-600: #c9c4b4;
+  --color-warm-700: #e0dbcb;
+  --color-warm-800: #efeade;
+  --color-warm-900: #f8f4ea;
+  --color-warm-950: #fdfbf5;
+
+  --color-candy: #16333a;
+
+  /* Teal scale. 50–300 are now LIGHTER than the card they sit on, so the
+     1px/2px borders and tinted chips read as structure rather than vanish.
+     400–950 keep the exact brand values from Light Mode. */
+  --color-teal-50: #1b3b40;
+  --color-teal-100: #22474d;
+  --color-teal-200: #2b575e;
+  --color-teal-300: #37686f;
+  --color-teal-400: #2dd4bf;
+  --color-teal-500: #14b8a6;
+  --color-teal-600: #0fb1a0;
+  --color-teal-700: #5eead4;
+  --color-teal-800: #8aeee0;
+  --color-teal-900: #d3f7f1;
+  --color-teal-950: #ecfdf9;
+
+  /* Cool neutral scale — a sea-grey ramp sampled from the water, not slate.
+     200/300 are borders and toggles (need visible luminance separation from
+     the card); 400+ are text and must clear 4.5:1 on it. */
+  --color-gray-50: #142a2e;
+  --color-gray-100: #102428;
+  --color-gray-200: #2a464c;
+  --color-gray-300: #46666c;
+  --color-gray-400: #8fb0b3;
+  --color-gray-500: #a4c2c4;
+  --color-gray-600: #bcd6d7;
+  --color-gray-700: #d5e8e8;
+  --color-gray-800: #e9f5f4;
+  --color-gray-900: #f4fbfa;
+  --color-gray-950: #fbfefe;
+
+  /* Amber accents — the photo's lamplight. 50–200 are deep tints/borders,
+     300 is the visible bright variant, 400+ keep their Light Mode values. */
+  --color-amber-50: #2a2113;
+  --color-amber-100: #3a2d16;
+  --color-amber-200: #5a4520;
+  --color-amber-300: #c9a24c;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #fbbf24;
+  --color-amber-700: #fcd34d;
+  --color-amber-800: #fde68a;
+
+  /* Red accents — 400+ are text/gradient stops re-pinned to readable pinks
+     further down; 50–300 are the tint/border half. */
+  --color-red-50: #2c2120;
+  --color-red-100: #4a2e2b;
+  --color-red-200: #6b3f3b;
+  --color-red-300: #8a524d;
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-700: #fca5a5;
+
+  /* Emerald accents — 600 is used as TEXT 8x here (trend arrows, "% up"),
+     so it is brightened for dark; every bg/border use of it stays fine. */
+  --color-emerald-50: #14302a;
+  --color-emerald-100: #194433;
+  --color-emerald-200: #27594a;
+  --color-emerald-300: #2f6d5a;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #2ecf95;
+  --color-emerald-700: #6ee7b7;
+  --color-emerald-800: #a7f3d0;
+
+  /* Blue / sky */
+  --color-blue-50: #152935;
+  --color-blue-100: #1f3c5c;
+  --color-blue-200: #2f5580;
+  --color-blue-400: #38bdf8;
+  --color-blue-700: #93c5fd;
+  --color-sky-50: #152b33;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+  --color-sky-800: #7dd3fc;
+
+  /* Purple / violet */
+  --color-purple-50: #241d38;
+  --color-purple-100: #352a55;
+  --color-purple-200: #4a3a72;
+  --color-purple-400: #a78bfa;
+  --color-purple-700: #c4b5fd;
+  --color-violet-50: #241f36;
+  --color-violet-400: #a78bfa;
+  --color-violet-500: #8b5cf6;
+  --color-violet-800: #c4b5fd;
+
+  /* Rose / orange */
+  --color-rose-50: #2f1d22;
+  --color-rose-200: #633845;
+  --color-rose-400: #fb7185;
+  --color-rose-500: #f43f5e;
+  --color-rose-700: #fda4af;
+  --color-rose-800: #fecdd3;
+  --color-orange-50: #2e241a;
+  --color-orange-100: #473419;
+  --color-orange-200: #6a4a22;
+  --color-orange-700: #fdba74;
+
+  /* Cyan / indigo */
+  --color-cyan-100: #17414a;
+  --color-cyan-200: #275961;
+  --color-cyan-700: #67e8f9;
+  --color-indigo-200: #3a4270;
+
+  /* The plain "white" surface becomes the primary dark card/input surface.
+     Teal-tinted so 60+ `bg-white` cards inherit the artwork's hue instead of
+     reading as grey SaaS panels. `text-white` on coloured buttons is
+     re-pinned below. */
+  --color-white: #173035;
+
+  /* Brand primary tints used directly by skeuo buttons */
+  --color-primary-darker: #2dd4bf;
+
+  /* Category-chip text colours (read on dark tints in dark mode) */
+  --color-accent-memory-dark: #93c5fd;
+  --color-accent-attention-dark: #fcd34d;
+  --color-accent-reasoning-dark: #c4b5fd;
+  --color-accent-language-dark: #6ee7b7;
+  --color-accent-recognition-dark: #fda4af;
+  --color-accent-daily-dark: #fdba74;
+
+  color-scheme: dark;
+}
+
+.dark .text-white,
+.dark .border-white {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.dark .text-red-50,
+.dark .text-red-50\/90 {
+  color: #fecaca;
+}
+
+.dark .text-teal-50,
+.dark .text-teal-50\/90 {
+  color: #ccfbf1;
+}
+
+/* ---- Dark-mode text contrast fixes ---------------------------------
+   The brand scales keep their Light Mode values above so buttons/gradients
+   don't shift, but that leaves a few *text* classes (red, grey-300,
+   teal-300) far too dark on the #173035 card. Pin only the text role. */
+.dark .text-red-500,
+.dark .text-red-600,
+.dark .hover\:text-red-500:hover,
+.dark .group:hover .group-hover\:text-red-500 {
+  color: #fca5a5;
+}
+
+.dark .text-red-700 {
+  color: #fecaca;
+}
+
+.dark .text-gray-300 {
+  color: #7e9ea1;
+}
+
+.dark .text-teal-300 {
+  color: #8aeee0;
+}
+
+/* Focus must stay obvious on a dark surface: outline follows the light-mode
+   `--color-primary` but flips to the brighter tint. */
+.dark :focus-visible {
+  outline-color: var(--color-primary-light);
+}
+
+/* Ring colours are baked as `color-mix(var(--color-*), …)`, and the dark
+   teal-200/400 values are now structural greys — too dim to mark a focused
+   field. Re-pin them to the brand tint. */
+.dark .ring-teal-200,
+.dark .ring-teal-200\/50,
+.dark .ring-teal-200\/70 {
+  --tw-ring-color: rgba(45, 212, 191, 0.6);
+}
+
+.dark .ring-teal-400\/60,
+.dark .ring-teal-400\/70 {
+  --tw-ring-color: rgba(45, 212, 191, 0.65);
+}
+
+.dark .ring-amber-200 {
+  --tw-ring-color: rgba(251, 191, 36, 0.5);
+}
+
+.dark .ring-red-200\/60 {
+  --tw-ring-color: rgba(248, 113, 113, 0.55);
+}
+
+/* teal-900 is a light colour in dark mode, so the card's soft drop shadow
+   would resolve to a pale halo. Send it back to a real shadow. */
+.dark .shadow-teal-900\/5,
+.dark .shadow-teal-900\/10 {
+  --tw-shadow-color: rgba(3, 16, 19, 0.55);
+}
+
+.dark .text-warm-50,
+.dark .skeuo-btn-primary,
+.dark .skeuo-btn-primary:hover,
+.dark .skeuo-btn-primary:active,
+.dark .skeuo-btn-primary.skeuo-btn-pressed,
+.dark .nav-btn-signup,
+.dark .nav-btn-signup:hover,
+.dark .nav-btn-signup:active {
+  color: #fffaf3;
+}
+
+.dark .pixel-chip {
+  background-color: var(--color-teal-100);
+  border-color: var(--color-teal-300);
+  color: var(--color-teal-900);
+}
+
+.dark ::selection {
+  background-color: #0d9488;
+  color: #faf1e2;
+}
+
+.dark body {
+  color: var(--color-warm-900);
+}
+
+/* Smooth theme switch. The existing `prefers-reduced-motion` block above
+   already collapses every transition/animation to ~0ms for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  *,
+  *::before,
+  *::after {
+    transition:
+      background-color 260ms ease,
+      border-color 260ms ease,
+      color 260ms ease,
+      fill 260ms ease,
+      stroke 260ms ease,
+      opacity 180ms ease;
+  }
+}
+
+.lamp-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 13px;
+  border: 2px solid var(--color-warm-200);
+  background: linear-gradient(180deg, var(--color-warm-100), var(--color-warm-200));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 2px 0 var(--color-warm-300),
+    0 5px 12px rgba(63, 40, 25, 0.12);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  cursor: pointer;
+}
+
+.lamp-toggle:hover {
+  border-color: var(--color-primary-light);
+  background: linear-gradient(180deg, var(--color-warm-50), var(--color-warm-200));
+  transform: translateY(-1px);
+}
+
+.lamp-toggle:active {
+  transform: translateY(1px) scale(0.96);
+  box-shadow:
+    inset 0 2px 4px rgba(63, 40, 25, 0.16),
+    0 1px 0 var(--color-warm-300),
+    0 2px 4px rgba(63, 40, 25, 0.1);
+}
+
+.lamp-toggle:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.dark .lamp-toggle {
+  border-color: var(--color-warm-300);
+  background: linear-gradient(180deg, var(--color-warm-100), var(--color-warm-200));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 2px 0 rgba(0, 0, 0, 0.45),
+    0 5px 14px rgba(0, 0, 0, 0.35);
+}
+
+.lamp-toggle:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.lamp-icon {
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+
+/* Labeled variant (mobile menu row / settings list item) */
+.lamp-toggle-labeled {
+  width: auto;
+  padding-inline: 0.7rem;
+  gap: 0.55rem;
+  height: 3.5rem;
+  border-radius: 14px;
+}
+
+.lamp-toggle-labeled .lamp-label {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-warm-800);
+  white-space: nowrap;
+}
+
+/* Day / night art layers — crossfade together like a lamp warming up/cooling */
+.lamp-day,
+.lamp-night {
+  transition:
+    opacity 330ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 330ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lamp-on .lamp-day {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.lamp-on .lamp-night {
+  opacity: 0;
+  transform: translateY(-3px) scale(0.82);
+}
+
+.lamp-off .lamp-day {
+  opacity: 0;
+  transform: translateY(3px) scale(0.82);
+}
+
+.lamp-off .lamp-night {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Lamp shell — warm amber metal when lit, cool slate when off */
+.lamp-shade,
+.lamp-glass,
+.lamp-metal {
+  transition:
+    fill 380ms ease,
+    opacity 380ms ease;
+}
+
+.lamp-on .lamp-shade {
+  fill: #f97316;
+}
+
+.lamp-on .lamp-glass {
+  fill: #fff4c2;
+}
+
+.lamp-off .lamp-shade {
+  fill: #475569;
+}
+
+.lamp-off .lamp-glass {
+  fill: #0f172a;
+}
+
+/* Warm halo behind the glass while lit */
+.lamp-halo {
+  transition: opacity 420ms ease;
+}
+
+.lamp-on .lamp-halo {
+  opacity: 0.85;
+}
+
+.lamp-off .lamp-halo {
+  opacity: 0;
+}
+
+/* Sun + rays */
+.lamp-sun {
+  fill: #fbbf24;
+  transition:
+    fill 300ms ease,
+    opacity 300ms ease;
+}
+
+.lamp-sun-core {
+  fill: #fbbf24;
+  transition: fill 300ms ease;
+}
+
+.lamp-on .lamp-sun-core {
+  fill: #f59e0b;
+}
+
+/* Moon + stars */
+.lamp-moon {
+  fill: #c7d2fe;
+  transition: fill 340ms ease;
+}
+
+.lamp-star {
+  fill: #e2e8f0;
+  transition: opacity 340ms ease;
+}
+
+/* Gentle star twinkle (skipped automatically when reduced motion is on) */
+@media (prefers-reduced-motion: no-preference) {
+  .lamp-off .lamp-star-a {
+    animation: lamp-star-twinkle 3.4s ease-in-out infinite;
+  }
+
+  .lamp-off .lamp-star-b {
+    animation: lamp-star-twinkle 3.4s ease-in-out 1.4s infinite;
+  }
+}
+
+@keyframes lamp-star-twinkle {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-0.5px);
+  }
+}
+
+/* Tiny base notch that nudges down when the lamp switches off (a "click") */
+.lamp-notch {
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lamp-off .lamp-notch {
+  transform: translateY(1.5px);
+}
+
+/* ─── Hanging pull-cord theme lamp ────────────────────────────────────────────
+   A small pull-chain lamp that hangs from the navbar border. The rope is
+   anchored to the very top of the `<header>` and the lamp dangles below it.
+   Drag the lamp downward past the threshold to flip Light/Dark; a plain
+   click/tap or Enter/Space does the same. Positioning is driven by two custom
+   properties set from JS:
+     --pp-anchor → px from the container up to the header's top border
+     --pp-pull   → current downward pull distance in px */
+
+.pp-pullcord {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+}
+
+.pp-pullcord__rope {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(-1 * var(--pp-anchor, 18px));
+  height: calc(var(--pp-rope-rest, 84px) + var(--pp-pull, 0px));
+  width: 4px;
+  border-radius: 999px;
+  background: repeating-linear-gradient(
+    180deg,
+    #d3a86f 0 6px,
+    #b98a50 6px 8px,
+    #e3bb82 8px 12px
+  );
+  box-shadow: 1px 2px 3px rgba(63, 40, 25, 0.3);
+  pointer-events: none;
+}
+
+.pp-pullcord__knot {
+  position: absolute;
+  left: 50%;
+  top: calc(-1 * var(--pp-anchor, 18px));
+  transform: translateX(-50%);
+  width: 12px;
+  height: 9px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #eec887, #a5762f 90%);
+  box-shadow: 0 2px 3px rgba(63, 40, 25, 0.35);
+  pointer-events: none;
+}
+
+.pp-pullcord__lamp {
+  position: absolute;
+  left: 50%;
+  top: calc(-1 * var(--pp-anchor, 18px) + var(--pp-rope-rest, 84px) + var(--pp-pull, 0px));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 48px;
+  pointer-events: none;
+}
+
+.pp-pullcord__lamp-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid var(--color-warm-200);
+  border-radius: 13px;
+  background: linear-gradient(180deg, var(--color-warm-50), var(--color-warm-200));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 2px 0 var(--color-warm-300),
+    0 6px 12px var(--pp-lamp-shadow);
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 120ms ease,
+    box-shadow 200ms ease,
+    border-color 200ms ease;
+}
+
+.pp-pullcord__lamp-btn:hover {
+  border-color: var(--color-primary-light);
+  transform: translateY(-1px);
+}
+
+.pp-pullcord.is-dragging .pp-pullcord__lamp-btn {
+  cursor: grabbing;
+}
+
+.pp-pullcord.is-dragging .pp-pullcord__lamp-btn:hover {
+  transform: translateY(0);
+}
+
+.pp-pullcord__lamp-btn:active {
+  transform: translateY(1px) scale(0.96);
+  box-shadow:
+    inset 0 2px 4px rgba(63, 40, 25, 0.18),
+    0 1px 0 var(--color-warm-300),
+    0 2px 5px var(--pp-lamp-shadow);
+}
+
+.pp-pullcord__lamp-btn:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.pp-pullcord__lamp-cap {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 9px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #f0cf94, #b17f34);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.pp-pullcord__lamp .lamp-icon {
+  width: 28px;
+  height: 28px;
+}
+
+/* Warm halo while theme is light — kept subtle */
+.pp-pullcord.lamp-on .pp-pullcord__lamp-btn {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 2px 0 var(--color-warm-300),
+    0 6px 12px var(--pp-lamp-shadow),
+    0 0 16px rgba(251, 191, 36, 0.26);
+}
+
+/* The rAF-driven spring in ThemePullCord owns all movement, so the rope and
+   lamp carry no CSS transitions that would fight it. */
+
+/* Near-threshold feedback */
+.pp-pullcord.is-near .pp-pullcord__lamp-btn {
+  border-color: var(--color-primary-light);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 2px 0 var(--color-warm-300),
+    0 6px 14px var(--pp-lamp-shadow),
+    0 0 0 4px rgba(20, 184, 166, 0.22);
+}
+
+.pp-pullcord.is-near .pp-pullcord__rope {
+  box-shadow:
+    0 0 0 1px rgba(20, 184, 166, 0.18),
+    1px 2px 3px rgba(63, 40, 25, 0.3);
+}
+
+/* Small "clicked" pop when the threshold fires */
+.pp-pullcord.is-fired .pp-pullcord__lamp-btn {
+  animation: pp-pullcord-pop 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes pp-pullcord-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Dark-mode material */
+.dark .pp-pullcord__lamp-btn {
+  border-color: var(--color-warm-300);
+  background: linear-gradient(180deg, #22474d, #1b3b40);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 2px 0 #0d2126,
+    0 6px 12px var(--pp-lamp-shadow);
+}
+
+.dark .pp-pullcord__rope {
+  background: repeating-linear-gradient(
+    180deg,
+    #7c6a4e 0 6px,
+    #5f523b 6px 8px,
+    #8a7657 8px 12px
+  );
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.5);
+}
+
+.dark .pp-pullcord__knot {
+  background: linear-gradient(180deg, #8a7657, #5f523b);
+}
+
+.dark .pp-pullcord__lamp-cap {
+  background: linear-gradient(180deg, #8a7657, #5f523b);
+}
+
+/* Reduced motion: no spring return, no pop — switching still works.
+   The pull follows the pointer instantly and snaps back on release. */
+@media (prefers-reduced-motion: reduce) {
+  .pp-pullcord.is-fired .pp-pullcord__lamp-btn {
+    animation: none;
+  }
+}
