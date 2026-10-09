@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { buildGreeting, genId, getResponse, nowTime, pick, SIM_VOICE_POOL } from "./chat";
+import { getAIResponse, isConfigured, getSetupMessage } from "./aiService";
 
 export default function useConversation({ user, memories, routine, reminders, games, supportNetwork, currentTime }) {
   const [messages, setMessages] = useState(() => buildGreeting(user, currentTime));
@@ -80,33 +81,121 @@ export default function useConversation({ user, memories, routine, reminders, ga
     []
   );
 
-  const reply = useCallback((text) => {
+  const reply = useCallback(async (text) => {
     if (thinkingRef.current) return;
     setThinking(true);
-    const delay = 850 + Math.random() * 650;
-    window.setTimeout(() => {
-      const data = { ...dataRef.current, aiContext: aiContextRef.current };
-      const res = getResponse(text, data);
-      const id = genId("a");
-      setMessages((prev) => [
-        ...prev,
-        {
-          id,
-          role: "ai",
-          text: res.text,
-          time: nowTime(),
-          actions: res.actions || [],
-          chips: res.chips || [],
-          context: res.context,
-          stream: true,
-        },
-      ]);
-      aiContextRef.current = res.context;
-      setAiContext(res.context);
-      setStreamingId(id);
-      setThinking(false);
-      setVoiceState("idle");
-    }, delay);
+
+    // Check if OpenAI is configured
+    const useOpenAI = isConfigured();
+
+    if (useOpenAI) {
+      // Use real OpenAI API
+      try {
+        const conversationHistory = messagesRef.current.map(msg => ({
+          role: msg.role,
+          text: msg.text
+        }));
+
+        const data = { ...dataRef.current, aiContext: aiContextRef.current };
+        const response = await getAIResponse(text, data, conversationHistory);
+
+        const id = genId("a");
+        
+        if (response.success) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id,
+              role: "ai",
+              text: response.text,
+              time: nowTime(),
+              actions: [],
+              chips: [],
+              context: aiContextRef.current,
+              stream: true,
+            },
+          ]);
+          setStreamingId(id);
+        } else {
+          // Show error message from API
+          setMessages((prev) => [
+            ...prev,
+            {
+              id,
+              role: "ai",
+              text: response.text,
+              time: nowTime(),
+              actions: [],
+              chips: [],
+              context: aiContextRef.current,
+              stream: false,
+            },
+          ]);
+        }
+      } catch (error) {
+        // Fallback to error message on unexpected errors
+        const id = genId("a");
+        setMessages((prev) => [
+          ...prev,
+          {
+            id,
+            role: "ai",
+            text: "Something went wrong. Please try again.",
+            time: nowTime(),
+            actions: [],
+            chips: [],
+            context: aiContextRef.current,
+            stream: false,
+          },
+        ]);
+      }
+    } else {
+      // Use dummy response system when API is not configured
+      const delay = 850 + Math.random() * 650;
+      window.setTimeout(() => {
+        const data = { ...dataRef.current, aiContext: aiContextRef.current };
+        const res = getResponse(text, data);
+        const id = genId("a");
+        
+        // Add setup message if this is the first interaction without API key
+        const isFirstInteraction = messagesRef.current.length <= 2;
+        const setupMessage = isFirstInteraction ? getSetupMessage() : null;
+
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          if (setupMessage) {
+            newMessages.push({
+              id: genId("a"),
+              role: "ai",
+              text: setupMessage,
+              time: nowTime(),
+              actions: [],
+              chips: [],
+              context: "setup",
+              stream: false,
+            });
+          }
+          newMessages.push({
+            id,
+            role: "ai",
+            text: res.text,
+            time: nowTime(),
+            actions: res.actions || [],
+            chips: res.chips || [],
+            context: res.context,
+            stream: true,
+          });
+          return newMessages;
+        });
+        
+        aiContextRef.current = res.context;
+        setAiContext(res.context);
+        setStreamingId(id);
+      }, delay);
+    }
+
+    setThinking(false);
+    setVoiceState("idle");
   }, []);
 
   const submit = useCallback(
