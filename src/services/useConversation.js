@@ -44,6 +44,8 @@ export default function useConversation({ user, memories, routine, reminders, ga
 
   const initialNameRef = useRef("");
   const messagesRef = useRef([]);
+  const busyRef = useRef(false);
+  const sessionRef = useRef(0);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -82,8 +84,12 @@ export default function useConversation({ user, memories, routine, reminders, ga
   );
 
   const reply = useCallback(async (text) => {
-    if (thinkingRef.current) return;
+    if (thinkingRef.current || busyRef.current) return;
+    busyRef.current = true;
     setThinking(true);
+
+    // Requests started before a chat reset must not write into the new conversation
+    const session = sessionRef.current;
 
     // Check if OpenAI is configured
     const useOpenAI = isConfigured();
@@ -93,11 +99,14 @@ export default function useConversation({ user, memories, routine, reminders, ga
       try {
         const conversationHistory = messagesRef.current.map(msg => ({
           role: msg.role,
-          text: msg.text
+          text: msg.text,
+          context: msg.context
         }));
 
         const data = { ...dataRef.current, aiContext: aiContextRef.current };
         const response = await getAIResponse(text, data, conversationHistory);
+
+        if (session !== sessionRef.current) return;
 
         const id = genId("a");
         
@@ -133,7 +142,9 @@ export default function useConversation({ user, memories, routine, reminders, ga
           ]);
         }
       } catch (error) {
-        // Fallback to error message on unexpected errors
+        if (session !== sessionRef.current) return;
+        // Fallback to error message on unexpected errors (never fabricate a reply)
+        console.error("Clara reply failed:", error?.message || error);
         const id = genId("a");
         setMessages((prev) => [
           ...prev,
@@ -148,17 +159,27 @@ export default function useConversation({ user, memories, routine, reminders, ga
             stream: false,
           },
         ]);
+      } finally {
+        busyRef.current = false;
+        if (session === sessionRef.current) {
+          setThinking(false);
+          setVoiceState("idle");
+        }
       }
     } else {
       // Use dummy response system when API is not configured
       const delay = 850 + Math.random() * 650;
-      window.setTimeout(() => {
+      // Stored in simTimerRef so resetChat/unmount cancels a pending reply
+      simTimerRef.current = window.setTimeout(() => {
+        busyRef.current = false;
+        if (session !== sessionRef.current) return;
+
         const data = { ...dataRef.current, aiContext: aiContextRef.current };
         const res = getResponse(text, data);
         const id = genId("a");
         
-        // Add setup message if this is the first interaction without API key
-        const isFirstInteraction = messagesRef.current.length <= 2;
+        // Add setup message once per conversation when API key is missing
+        const isFirstInteraction = !messagesRef.current.some((message) => message.context === "setup");
         const setupMessage = isFirstInteraction ? getSetupMessage() : null;
 
         setMessages((prev) => {
@@ -191,11 +212,10 @@ export default function useConversation({ user, memories, routine, reminders, ga
         aiContextRef.current = res.context;
         setAiContext(res.context);
         setStreamingId(id);
+        setThinking(false);
+        setVoiceState("idle");
       }, delay);
     }
-
-    setThinking(false);
-    setVoiceState("idle");
   }, []);
 
   const submit = useCallback(
@@ -305,6 +325,8 @@ export default function useConversation({ user, memories, routine, reminders, ga
   }, []);
 
   const resetChat = useCallback(() => {
+    sessionRef.current += 1;
+    busyRef.current = false;
     setMessages(buildGreeting(user, currentTime));
     setAiContext("greeting");
     aiContextRef.current = "greeting";

@@ -19,7 +19,8 @@ import OpenAI from "openai";
  */
 
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-const MODEL = import.meta.env.VITE_OPENAI_MODEL || "gpt-4o-mini";
+// gpt-4o-mini is available on the Responses API and matches the documented default.
+const MODEL = (import.meta.env.VITE_OPENAI_MODEL || "").trim() || "gpt-4o-mini";
 
 let openaiClient = null;
 
@@ -91,30 +92,44 @@ If you don't have information about something the user asks, say so honestly and
 /**
  * Build conversation context from app data
  * Limits the amount of data sent to the API
+ * Tolerates missing/undefined collections so a partial app state can never crash the request
  */
-function buildContextData(data) {
-  const { user, memories, routine, reminders, games, currentTime } = data;
+function buildContextData(data = {}) {
+  const asArray = (value) => (Array.isArray(value) ? value : []);
+  const { user, currentTime } = data;
+  const memories = asArray(data.memories);
+  const routine = asArray(data.routine);
+  const reminders = asArray(data.reminders);
+  const games = asArray(data.games);
 
   // Limit memories to most recent 5 to reduce token usage
-  const recentMemories = memories.slice(0, 5).map(m => ({
-    title: m.title,
-    description: m.description,
-    favorite: m.favorite
+  const recentMemories = memories.slice(0, 5).map((m) => ({
+    title: m?.title,
+    description: m?.description,
+    favorite: !!m?.favorite,
   }));
 
   // Limit routine to next 5 items
-  const upcomingRoutine = routine.filter(r => !r.completed).slice(0, 5);
+  const upcomingRoutine = routine.filter((r) => r && !r.completed).slice(0, 5);
 
   // Limit reminders to pending important ones
-  const pendingReminders = reminders.filter(r => r.important && !r.completed).slice(0, 5);
+  const pendingReminders = reminders.filter((r) => r && r.important && !r.completed).slice(0, 5);
 
   // Limit games to first 3
-  const availableGames = games.slice(0, 3).map(g => ({
-    name: g.name,
-    href: g.href,
-    duration: g.duration,
-    skillTarget: g.skillTarget
+  const availableGames = games.slice(0, 3).map((g) => ({
+    name: g?.name,
+    href: g?.href,
+    duration: g?.duration,
+    skillTarget: g?.skillTarget,
   }));
+
+  let formattedTime;
+  try {
+    const date = currentTime ? new Date(currentTime) : new Date();
+    formattedTime = Number.isNaN(date.getTime()) ? new Date().toLocaleString() : date.toLocaleString();
+  } catch {
+    formattedTime = new Date().toLocaleString();
+  }
 
   return {
     userName: user?.name || "friend",
@@ -122,7 +137,7 @@ function buildContextData(data) {
     routine: upcomingRoutine,
     reminders: pendingReminders,
     games: availableGames,
-    currentTime
+    currentTime: formattedTime,
   };
 }
 
@@ -176,10 +191,15 @@ export async function getAIResponse(userMessage, appData, conversationHistory = 
     };
 
     // Build conversation history (limit to last 10 messages)
-    const limitedHistory = conversationHistory.slice(-10).map(msg => ({
-      role: msg.role === "user" ? "user" : "assistant",
-      content: msg.text
-    }));
+    // Skips greeting/setup/system notes so only real user/Clara turns are replayed
+    const sourceHistory = Array.isArray(conversationHistory) ? conversationHistory : [];
+    const limitedHistory = sourceHistory
+      .filter((msg) => msg && typeof msg.text === "string" && msg.text.trim() !== "" && msg.context !== "setup")
+      .slice(-10)
+      .map((msg) => ({
+        role: msg.role === "user" ? "user" : "assistant",
+        content: msg.text,
+      }));
 
     // Build messages array
     const messages = [
@@ -188,16 +208,20 @@ export async function getAIResponse(userMessage, appData, conversationHistory = 
       { role: "user", content: userMessage }
     ];
 
-    // Call OpenAI API
+    // Call OpenAI API (Responses API)
     const response = await openaiClient.responses.create({
       model: MODEL,
       input: messages,
-      max_tokens: 500,
+      max_output_tokens: 500,
       temperature: 0.7
     });
 
-    // Extract response text
-    const responseText = response.output_text || response.output?.[0]?.content?.[0]?.text || "";
+    // Extract response text (output_text is the SDK shortcut, fallback walks the output array)
+    const fallbackText = (Array.isArray(response?.output) ? response.output : [])
+      .flatMap((item) => (Array.isArray(item?.content) ? item.content : []))
+      .map((part) => (typeof part?.text === "string" ? part.text : ""))
+      .join("");
+    const responseText = (response?.output_text || fallbackText).trim();
 
     if (!responseText) {
       return {
@@ -213,48 +237,91 @@ export async function getAIResponse(userMessage, appData, conversationHistory = 
     };
 
   } catch (error) {
-    // Handle specific error types
-    if (error.status === 401) {
-      return {
-        success: false,
-        error: "INVALID_KEY",
-        text: "Clara's API key is invalid. Please check your VITE_OPENAI_API_KEY."
-      };
-    }
+    return describeApiError(error);
+  }
+}
 
-    if (error.status === 429) {
-      return {
-        success: false,
-        error: "RATE_LIMIT",
-        text: "Clara is busy right now. Please wait a moment and try again."
-      };
-    }
+/**
+ * Map an OpenAI SDK error to a structured, user-friendly result.
+ * Never includes the API key or raw request details in the message.
+ */
+function describeApiError(error) {
+  const status = typeof error?.status === "number" ? error.status : undefined;
+  const code = typeof error?.code === "string" ? error.code : "";
+  const message = typeof error?.message === "string" ? error.message : "";
 
-    if (error.status === 500 || error.status === 503) {
-      return {
-        success: false,
-        error: "SERVICE_ERROR",
-        text: "Clara is having technical difficulties. Please try again later."
-      };
-    }
-
-    // Network errors
-    if (error.name === "TypeError" && error.message.includes("fetch")) {
-      return {
-        success: false,
-        error: "NETWORK_ERROR",
-        text: "Could not connect to Clara. Please check your internet connection."
-      };
-    }
-
-    // Generic error
-    console.error("OpenAI API error:", error.message);
+  if (status === 401 || status === 403) {
     return {
       success: false,
-      error: "UNKNOWN_ERROR",
-      text: "Something went wrong. Please try again."
+      error: "INVALID_KEY",
+      text: "Clara's API key is invalid or was revoked. Please check your VITE_OPENAI_API_KEY.",
     };
   }
+
+  if (status === 404) {
+    return {
+      success: false,
+      error: "MODEL_NOT_FOUND",
+      text: `The model "${MODEL}" is not available for this OpenAI account. Check VITE_OPENAI_MODEL or remove it to use the default.`,
+    };
+  }
+
+  if (status === 429) {
+    if (code === "insufficient_quota" || /insufficient quota|exceeded your current quota/i.test(message)) {
+      return {
+        success: false,
+        error: "OUT_OF_CREDITS",
+        text: "Your OpenAI account is out of credit. Please add credit to your OpenAI account and try again.",
+      };
+    }
+    return {
+      success: false,
+      error: "RATE_LIMIT",
+      text: "Clara is busy right now. Please wait a moment and try again.",
+    };
+  }
+
+  if (status === 400 || status === 422) {
+    return {
+      success: false,
+      error: "INVALID_REQUEST",
+      text: "Clara couldn't send that request. Please try again with a shorter message.",
+    };
+  }
+
+  if (status !== undefined && status >= 500) {
+    return {
+      success: false,
+      error: "SERVICE_ERROR",
+      text: "Clara is having technical difficulties. Please try again later.",
+    };
+  }
+
+  // Could not reach the API at all (offline, DNS, CORS, timeout, aborted request).
+  // The SDK reports these as APIConnectionError, which keeps status undefined.
+  const isConnectionError =
+    (typeof OpenAI.APIConnectionError === "function" && error instanceof OpenAI.APIConnectionError) ||
+    (typeof OpenAI.APIUserAbortError === "function" && error instanceof OpenAI.APIUserAbortError) ||
+    error?.name === "AbortError" ||
+    code === "connection_error" ||
+    (error?.name === "TypeError" && /fetch|network|load failed/i.test(message)) ||
+    /connection error/i.test(message);
+
+  if (isConnectionError) {
+    return {
+      success: false,
+      error: "NETWORK_ERROR",
+      text: "Could not connect to Clara. Please check your internet connection.",
+    };
+  }
+
+  // Generic error
+  console.error("OpenAI API error:", message || error);
+  return {
+    success: false,
+    error: "UNKNOWN_ERROR",
+    text: "Something went wrong. Please try again.",
+  };
 }
 
 /**

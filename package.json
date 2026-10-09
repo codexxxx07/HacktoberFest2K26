@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:ai": "node scripts/test-aiService.mjs"
   },
   "dependencies": {
     "@clerk/react": "^6.15.2",
